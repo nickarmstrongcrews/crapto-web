@@ -10,7 +10,9 @@ To view a wallet, just point a web browser at the address above. There should al
 To restart web server:
 0) SSH into VM using instructions below
 1) kill the old web server: sudo killall run_server.py
-2) sudo python3 ~/crapto-web/run_server.py
+2) screen -R deploy
+3) sudo python3 ~/crapto-web/run_server.py
+4) Ctrl-a d
 
 To power up VM:
 1) Go to https://us-west-2.console.aws.amazon.com/ec2/v2/home?region=us-west-2#Instances:
@@ -18,7 +20,7 @@ To power up VM:
 
 To SSH into VM:
 0) be Nick and use strongarm-glaptop2
-1) ssh -i "~/crapto/keys/strongarm-glaptop2_priv_key" 18.237.79.243
+1) ssh -i "~/crapto/keys/strongarm-glaptop2_priv_key" ubuntu@18.237.79.243
 
 To manually modify a wallet:
 1) SSH into server from strongarm-glaptop2 using instructions above

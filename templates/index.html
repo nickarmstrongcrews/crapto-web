@@ -20,7 +20,7 @@
     <div class="flash">{{ message }}</div>
     {% endfor %}
 
-    {% for message in form.diversity.errors %}
+    {% for message in form.passphrase.errors %}
     <div class="flash">{{ message }}</div>
     {% endfor %}
 
@@ -29,8 +29,8 @@
       {{ form.wallet.label }}
       {{ form.wallet }}
 
-      {{ form.diversity.label }}
-      {{ form.diversity }}
+      {{ form.passphrase.label }}
+      {{ form.passphrase }}
 
       {{ form.submit }}
     </form>

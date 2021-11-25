@@ -6,7 +6,15 @@ import csv
 
 WALLETS_CSV_FILENAME = "/home/ubuntu/crapto-web/data/wallets.csv"
 
-def read_wallet(wallet_address):
+def authenticate(wallet_address, passphrase):
+    return wallet_address.lower() == passphrase.lower()
+
+def read_wallet(wallet_address, passphrase):
+    if not authenticate(wallet_address, passphrase):
+      return "Bad passphrase for wallet address %s" % wallet_address
+
+    # Note: since the file is read within this method, which is called for every request,
+    #       updates to the CSV file will not require a server restart.
     wallets = {}
     with open(WALLETS_CSV_FILENAME, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
@@ -14,8 +22,9 @@ def read_wallet(wallet_address):
             wallets[row[0]] = row[1]
 
     #wallet_address = str(wallets)
+    wallet_address = wallet_address.lower()
     amount = wallets[wallet_address] if wallet_address in wallets else 0.0
-            
+
     # Formatting in html
     html = ''
     html = addContent(html, header(

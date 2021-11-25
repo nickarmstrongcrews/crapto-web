@@ -7,10 +7,9 @@ app = Flask(__name__)
 
 
 class ReusableForm(Form):
-    """User entry form for entering specifics"""
     wallet = TextField("Enter wallet address:", validators=[
                      validators.InputRequired()])
-    diversity = TextField("Enter passphrase:", validators=[
+    passphrase = TextField("Enter passphrase:", validators=[
                      validators.InputRequired()])
     submit = SubmitField("Enter")
 
@@ -19,14 +18,17 @@ class ReusableForm(Form):
 @app.route("/", methods=['GET', 'POST'])
 def home():
     """Home page of app with form"""
+    wallet_address = request.args.get('wallet_address')
+
     # Create form
-    form = ReusableForm(request.form)
+    form = ReusableForm(request.form, wallet=wallet_address)
 
     # On form entry and all conditions met
     if request.method == 'POST' and form.validate():
         # Extract information
         wallet_address = request.form['wallet']
-        return render_template('wallet.html', input=read_wallet(wallet_address))
+        passphrase = request.form['passphrase']
+        return render_template('wallet.html', input=read_wallet(wallet_address, passphrase))
 
     # Send template information to index.html
     return render_template('index.html', form=form)
