@@ -16,12 +16,13 @@ To power up VM:
 1) Go to https://us-west-2.console.aws.amazon.com/ec2/v2/home?region=us-west-2#Instances:
 2) Note the IP address ("Public IPv4" field on Instances page)
 
-
 To SSH into VM:
 0) be Nick and use strongarm-glaptop2
 1) ssh -i "~/crapto/keys/strongarm-glaptop2_priv_key" 18.237.79.243
 
 To manually modify a wallet:
-1) SSH into server from strongarm-glaptop2:
+1) SSH into server from strongarm-glaptop2 using instructions above
 2) edit the file ~/crapto-web/data/wallets.csv
 3) follow instructions above to restart the server
+
+Note to self: git token is at strongarm-glaptop2:~/crapto/keys/github_personal_access_token.txt
