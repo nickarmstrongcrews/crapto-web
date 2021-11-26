@@ -1,4 +1,4 @@
-from utils import read_wallet, add_wallet, write_error, send
+from utils import read_wallet, add_wallet, write_error, send, render_email_template
 from flask import Flask, render_template, request
 from wtforms import Form, TextField, PasswordField, validators, SubmitField, DecimalField, IntegerField
 
@@ -60,7 +60,8 @@ def send_page():
   if not from_address or not to_address or not amount or not passphrase:
     error_string = "usage: /send?from=<wallet_addr>&to=<wallet_addr>&amount=<billion_crapto>"
     return render_template('error.html', input=write_error(error_string))
-  return render_template('sent.html', input=send(from_address, to_address, passphrase, amount))
+  send_output = send(from_address, to_address, passphrase, amount)
+  return render_template('sent.html', send_output=send(from_address, to_address, passphrase, amount), email_template_output=render_email_template(to_address, amount))
 
 if __name__ == "__main__":
     print(("* Loading Flask starting server..."

@@ -150,14 +150,15 @@ def remove_spaces(s):
 
     return s
 
-def email_template(wallet_address, amount, sender_name='<Someone>'):
+def render_email_template(wallet_address, amount, sender_name='&lt;Someone&gt;'):
     passphrase = wallet_address
+    wallet_url = '%s/?wallet_address=%s' % (ROOT_URL, wallet_address)
     html = ''
     html = addContent(html, '<h5>%s has sent you a gift of 100 billion Crapto. This has been deposited into a new Crapto wallet as follows...</h5>' % sender_name)
     html = addContent(html, '<h5>Wallet address: %s</h5>' % wallet_address)
     html = addContent(html, '<h5>Passphrase: %s</h5>' % passphrase)
-    html = addContent(html, '<h5>You can access your Crapto wallet at: %s/?wallet_address=%s</h5>' % (ROOT_URL, wallet_address))
-    return """
+    html = addContent(html, '<h5>You can access your Crapto wallet at: <a href="%s">%s</a></h5>' % (wallet_url, wallet_url))
+    html = addContent(html, """
   <center>
 	<img src="static/images/crapto256.png" alt="Crapto icon"/>
   </center>
@@ -172,4 +173,5 @@ def email_template(wallet_address, amount, sender_name='<Someone>'):
 
 <h4>Can I mine for more Crapto?</h4>
 <h5>Yes. However, it cannot be done through the web interface; instead, you must build from source and install the client (for Linux and Windows) at: <a href=https://github.com/nickarmstrongcrews/crapto>https://github.com/nickarmstrongcrews/crapto</a> (note: this is not recommended for the uninitiated).</h5>
-"""
+""")
+    return html
