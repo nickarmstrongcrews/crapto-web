@@ -23,7 +23,10 @@ def add_wallet(wallet_address, passphrase, amount):
 
     wallet_address = wallet_address.lower()
     amount = float(amount)
-    amount += wallets[wallet_address] if wallet_address in wallets else 0.0
+    if wallet_address not in wallets:
+      wallets[wallet_address] = 0
+    wallets[wallet_address] += amount
+    amount = wallets[wallet_address]
 
     # Write back CSV file (currently doesn't work... permissions?)
     with open(WALLETS_CSV_FILENAME, 'w', newline='') as f:
