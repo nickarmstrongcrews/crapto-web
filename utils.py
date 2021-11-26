@@ -4,7 +4,8 @@ import json
 import re
 import csv
 
-WALLETS_CSV_FILENAME = "/home/ubuntu/crapto-web/data/wallets.csv"
+ROOT_URL = 'http://craptocurrency.net'
+WALLETS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/wallets.csv'
 
 def read_wallets_file():
     wallets = {}
@@ -148,3 +149,27 @@ def remove_spaces(s):
     s = re.sub(r'\s+([.,;?])', r'\1', s)
 
     return s
+
+def email_template(wallet_address, amount, sender_name='<Someone>'):
+    passphrase = wallet_address
+    html = ''
+    html = addContent(html, '<h5>%s has sent you a gift of 100 billion Crapto. This has been deposited into a new Crapto wallet as follows...</h5>' % sender_name)
+    html = addContent(html, '<h5>Wallet address: %s</h5>' % wallet_address)
+    html = addContent(html, '<h5>Passphrase: %s</h5>' % passphrase)
+    html = addContent(html, '<h5>You can access your Crapto wallet at: %s/?wallet_address=%s</h5>' % (ROOT_URL, wallet_address))
+    return """
+  <center>
+	<img src="static/images/crapto256.png" alt="Crapto icon"/>
+  </center>
+
+<h3>FAQ</h3>
+
+<h4>What is Crapto?</h4>
+<h5>It is a digital currency (or "cryptocurrency") similar to Bitcoin.</h5>
+
+<h4>What can I do with my Crapto?</h4>
+<h5>Most likely you will want to save it until its value follows the trend of cryptocurrencies like Bitcoin (which started at $0.0008 and today sells for around $60k). You can also send and receive Crapto (not yet available through the web interface), for example in exchange for goods and services, to any individual or entity which accepts Crapto as a form of payment.</h5>
+
+<h4>Can I mine for more Crapto?</h4>
+<h5>Yes. However, it cannot be done through the web interface; instead, you must build from source and install the client (for Linux and Windows) at: <a href=https://github.com/nickarmstrongcrews/crapto>https://github.com/nickarmstrongcrews/crapto</a> (note: this is not recommended for the uninitiated).</h5>
+"""
