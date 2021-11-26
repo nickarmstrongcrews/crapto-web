@@ -1,4 +1,4 @@
-from utils import read_wallet
+from utils import read_wallet, add_wallet, write_error
 from flask import Flask, render_template, request
 from wtforms import Form, TextField, validators, SubmitField, DecimalField, IntegerField
 
@@ -33,9 +33,24 @@ def home():
     # Send template information to index.html
     return render_template('index.html', form=form)
 
+# admin interface to add to a wallet (existing or not)
+@app.route('/about')
+def about():
+  return render_template('about.html')
+
+# admin interface to add to a wallet (existing or not)
+@app.route('/add', methods=['GET'])
+def admin():
+  wallet_address = request.args.get('wallet_address')
+  amount = request.args.get('amount')
+  passphrase = wallet_address
+  if not wallet_address or not amount or not passphrase:
+    error_string = "usage: /add?wallet_address=<addr>&amount=<billion_crapto>"
+    return render_template('error.html', input=write_error(error_string))
+  return render_template('add.html', input=add_wallet(wallet_address, passphrase, amount))
 
 if __name__ == "__main__":
-    print(("* Loading Keras model and Flask starting server..."
+    print(("* Loading Flask starting server..."
            "please wait until server has fully started"))
     # Run app
     app.run(host="0.0.0.0", port=80)
