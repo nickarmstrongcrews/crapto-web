@@ -19,14 +19,16 @@ def add_wallet(wallet_address, passphrase, amount):
     with open(WALLETS_CSV_FILENAME, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in reader:
-            wallets[row[0]] = row[1]
+            wallets[row[0]] = float(row[1])
 
-    #wallet_address = str(wallets)
     wallet_address = wallet_address.lower()
     amount = float(amount)
     amount += wallets[wallet_address] if wallet_address in wallets else 0.0
 
-    # TODO: write back CSV file
+    # Write back CSV file (currently doesn't work... permissions?)
+    with open(WALLETS_CSV_FILENAME, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerows(wallets.items())
 
     # Formatting in html
     html = ''
@@ -48,9 +50,8 @@ def read_wallet(wallet_address, passphrase):
     with open(WALLETS_CSV_FILENAME, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in reader:
-            wallets[row[0]] = row[1]
+            wallets[row[0]] = float(row[1])
 
-    #wallet_address = str(wallets)
     wallet_address = wallet_address.lower()
     amount = wallets[wallet_address] if wallet_address in wallets else 0.0
 
