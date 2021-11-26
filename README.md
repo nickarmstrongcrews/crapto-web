@@ -37,3 +37,4 @@ To manually modify a wallet:
 3) follow instructions above to restart the server
 
 Note to self: git token is at strongarm-glaptop2:~/crapto/keys/github_personal_access_token.txt
+Note to self: DNS managed through hover.com
