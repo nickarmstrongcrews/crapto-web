@@ -108,3 +108,7 @@ venv.bak/
 
 # vi temp file
 *.swp
+
+# wallet files
+wallets.csv
+wallets.csv.bak

@@ -3,6 +3,15 @@ Followed instructions at: https://towardsdatascience.com/deploying-a-python-web-
 
 Note: these instructions will only work as-is for strongarm; to let others do it, at the very least, we need to generate and distribute more SSH keys.
 
+To install (after initial checkout):
+1) Install requirements
+sudo apt-get update
+sudo apt-get install python3-pip
+cd crapto-web
+pip3 install --user -r requirements.txt
+2) initialize wallet file
+cp data/default_wallet.csv data/wallet.csv
+
 Last known URL for Crapto web server: http://18.237.79.243/
 
 To view a wallet, just point a web browser at the address above. There should always be two test wallets with addresses "wallet1" and "wallet2" and no passphrase. If you have a wallet pre-allocated to you, the convention is to use your first name lowercase and the same for passphrase.
