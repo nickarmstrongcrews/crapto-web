@@ -132,6 +132,7 @@ def read_wallet(wallet_address, passphrase):
 
 def amount2str(amount):
     amount = float(amount)
+    amount = round(amount,3)
     return "{:,}".format(amount) + " billion pieces of Crapto"
 
 def header(text, color='black', gen_text=None):

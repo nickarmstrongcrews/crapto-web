@@ -1,6 +1,7 @@
-from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template
+from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str
 from flask import Flask, render_template, request
 from wtforms import Form, TextField, PasswordField, validators, SubmitField, DecimalField, IntegerField
+import time
 
 # Create app
 app = Flask(__name__)
@@ -49,6 +50,19 @@ def admin():
     return render_template('error.html', input=write_error(error_string))
   return render_template('add.html', input=add_wallet(wallet_address, passphrase, amount))
 
+@app.route('/mine', methods=['GET'])
+def mine_page():
+  wallet_address = request.args.get('wallet_address')
+  passphrase = wallet_address
+  if not wallet_address or not passphrase:
+    error_string = "usage: /mine?wallet_address=[addr]"
+    return render_template('error.html', input=write_error(error_string))
+  MINE_INCREMENT = 0.001
+  MINE_TIME = 3.0
+  time.sleep(MINE_TIME)
+  rendered_output = "<div><center><h4>Mined %s</h4></center></div><hr>" % amount2str(MINE_INCREMENT)
+  rendered_output += add_wallet(wallet_address, passphrase, MINE_INCREMENT)
+  return render_template('add.html', input=rendered_output)
 
 # admin interface to add to a wallet (existing or not)
 @app.route('/send_prep', methods=['GET', 'POST'])
