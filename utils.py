@@ -3,9 +3,11 @@ import random
 import json
 import re
 import csv
+import hashlib
 
 ROOT_URL = 'http://craptocurrency.net'
 WALLETS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/wallets.csv'
+PASSWORDS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/passwords.csv'
 
 def read_wallets_file():
     wallets = {}
@@ -14,6 +16,23 @@ def read_wallets_file():
         for row in reader:
             wallets[row[0]] = float(row[1])
     return wallets
+
+def read_passwords_file():
+    passwords = {}
+    with open(PASSWORDS_CSV_FILENAME, newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        for row in reader:
+            passwords[row[0]] = row[1]
+    return passwords
+
+def hash_passphrase(passphrase):
+  return hashlib.sha1(passphrase).hex_digest()
+
+def check_password(wallet_address, passphrase):
+  passwords = read_passwords_file()
+  given_pass_hash = hash_passphrase(passphrase)
+  true_pass_hash = passwords[wallet_address] if wallet_address in passwords else hash_passphrase(wallet_address)
+  return given_pass_hash == true_pass_hash
 
 def lookup_balance(wallet_address):
   wallets = read_wallets_file()

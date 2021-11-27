@@ -12,6 +12,7 @@ cd crapto-web
 pip3 install --user -r requirements.txt
 2) initialize wallet file
 cp data/default_wallet.csv data/wallet.csv
+cp data/default_passwords.csv data/passwords.csv
 
 Last known URL for Crapto web server: http://craptocurrency.net
 
