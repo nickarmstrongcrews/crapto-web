@@ -128,6 +128,10 @@ def read_wallet(wallet_address, passphrase):
     action_html = addContent(action_html, '<input type="hidden" name="from" value="%s">' % wallet_address)
     action_html = addContent(action_html, '<input type="submit" value="Send Crapto" />')
     action_html = addContent(action_html, '</form>')
+    action_html = addContent(action_html, '<form action="/mine" method="get">')
+    action_html = addContent(action_html, '<input type="hidden" name="wallet_address" value="%s">' % wallet_address)
+    action_html = addContent(action_html, '<input type="submit" value="Mine" />')
+    action_html = addContent(action_html, '</form>')
     return f'<div>{html}</div><div>{action_html}</div>'
 
 def amount2str(amount):
