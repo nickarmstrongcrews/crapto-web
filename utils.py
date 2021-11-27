@@ -17,6 +17,11 @@ def read_wallets_file():
             wallets[row[0]] = float(row[1])
     return wallets
 
+def write_wallets_file(wallets):
+    with open(WALLETS_CSV_FILENAME, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerows(wallets.items())
+
 def read_passwords_file():
     passwords = {}
     with open(PASSWORDS_CSV_FILENAME, newline='') as csvfile:
@@ -24,6 +29,11 @@ def read_passwords_file():
         for row in reader:
             passwords[row[0]] = row[1]
     return passwords
+
+def write_passwords_file(passwords):
+    with open(PASSWORDS_CSV_FILENAME, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerows(passwords.items())
 
 def hash_passphrase(passphrase):
   return hashlib.sha1(passphrase).hex_digest()
@@ -85,9 +95,7 @@ def send(from_address, to_address, passphrase, amount):
     wallets[to_address] += amount
     from_balance = wallets[from_address]
 
-    with open(WALLETS_CSV_FILENAME, 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerows(wallets.items())
+    write_wallets_file(wallets)
 
     # Formatting in html
     html = ''
@@ -111,9 +119,7 @@ def add_wallet(wallet_address, passphrase, amount):
     wallets[wallet_address] += amount
     total_amount = wallets[wallet_address]
 
-    with open(WALLETS_CSV_FILENAME, 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerows(wallets.items())
+    write_wallets_file(wallets)
 
     # Formatting in html
     html = ''
