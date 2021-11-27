@@ -35,6 +35,14 @@ def write_passwords_file(passwords):
         writer = csv.writer(f)
         writer.writerows(passwords.items())
 
+def change_pass(wallet_address, old_phash, new_passphrase):
+  passwords = read_passwords_file()
+  if authenticate(wallet_address, old_phash):
+    passwords[wallet_address] = hash_passphrase(new_passphrase)
+    write_passwords_file(passwords)
+    return "Successfully changed passphrase."
+  return "Bad passphrase for wallet address %s" % wallet_address
+
 def hash_passphrase(passphrase):
   hash_object = hashlib.sha1(passphrase.encode('utf-8'))
   return hash_object.hexdigest()
