@@ -46,8 +46,8 @@ def lookup_balance(wallet_address):
 def write_error(error_string):
   return error_string
 
-def render_send_prep(from_address, passphrase):
-    if not authenticate(from_address, passphrase):
+def render_send_prep(from_address, phash):
+    if not authenticate(from_address, phash):
       return "Bad passphrase for wallet address %s" % from_address
 
     balance = lookup_balance(from_address)
@@ -59,6 +59,7 @@ def render_send_prep(from_address, passphrase):
     html = addContent(html, box(from_address + ": ", amount2str(balance)))
     html = addContent(html, '<form action="/send" method="get">')
     html = addContent(html, '<input type="hidden" name="from" value="%s">' % from_address)
+    html = addContent(html, '<input type="hidden" name="phash" value="%s">' % phash)
     html = addContent(html, """
 <label>To wallet address: </label><input type="text" name="to"><br>
 <label>Amount (in billions): </label><input type="number" name="amount"><br>
@@ -66,8 +67,8 @@ def render_send_prep(from_address, passphrase):
 </form>""")
     return f'<div>{html}</div>'
 
-def send(from_address, to_address, passphrase, amount):
-    if not authenticate(from_address, passphrase):
+def send(from_address, to_address, phash, amount):
+    if not authenticate(from_address, phash):
       return "Bad passphrase for wallet address %s" % from_address
 
     # Note: since the file is read within this method, which is called for every request,
@@ -83,8 +84,7 @@ def send(from_address, to_address, passphrase, amount):
     if wallets[from_address] < amount:
       return "Could not send; you tried to send %s, but your wallet only has %s." % (amount2str(amount), amount2str(wallets[from_address]))
 
-    # TODO: for some reason, without this, we reliably change by double the amount requested. ???
-    amount = amount / 2.0
+    amount = amount
 
     wallets[from_address] -= amount
     wallets[to_address] += amount
@@ -99,8 +99,8 @@ def send(from_address, to_address, passphrase, amount):
     html = addContent(html, box(from_address + ": ", amount2str(from_balance)))
     return f'<div>{html}</div>'
 
-def add_wallet(wallet_address, passphrase, amount):
-    if not authenticate(wallet_address, passphrase):
+def add_wallet(wallet_address, phash, amount):
+    if not authenticate(wallet_address, phash):
       return "Bad passphrase for wallet address %s" % wallet_address
 
     # Note: since the file is read within this method, which is called for every request,
@@ -123,14 +123,13 @@ def add_wallet(wallet_address, passphrase, amount):
     html = addContent(html, box(wallet_address + ": ", amount2str(total_amount)))
     return f'<div>{html}</div>'
 
-def authenticate(wallet_address, passphrase):
+def authenticate(wallet_address, phash):
   passwords = read_passwords_file()
-  given_pass_hash = hash_passphrase(passphrase)
   true_pass_hash = passwords[wallet_address] if wallet_address in passwords else hash_passphrase(wallet_address)
-  return given_pass_hash == true_pass_hash
+  return phash == true_pass_hash
 
-def read_wallet(wallet_address, passphrase):
-    if not authenticate(wallet_address, passphrase):
+def read_wallet(wallet_address, phash):
+    if not authenticate(wallet_address, phash):
       return "Bad passphrase for wallet address %s" % wallet_address
 
     # Note: since the file is read within this method, which is called for every request,
@@ -149,10 +148,12 @@ def read_wallet(wallet_address, passphrase):
     action_html = ''
     action_html = addContent(action_html, '<form action="/send_prep" method="get">')
     action_html = addContent(action_html, '<input type="hidden" name="from" value="%s">' % wallet_address)
+    action_html = addContent(action_html, '<input type="hidden" name="phash" value="%s">' % phash)
     action_html = addContent(action_html, '<input type="submit" value="Send" />')
     action_html = addContent(action_html, '</form>')
     action_html = addContent(action_html, '<form action="/mine" method="get">')
     action_html = addContent(action_html, '<input type="hidden" name="wallet_address" value="%s">' % wallet_address)
+    action_html = addContent(action_html, '<input type="hidden" name="phash" value="%s">' % phash)
     action_html = addContent(action_html, '<input type="submit" value="Mine" />')
     action_html = addContent(action_html, '</form>')
     return f'<div>{html}</div><div>{action_html}</div>'
