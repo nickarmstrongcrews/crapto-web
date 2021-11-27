@@ -31,6 +31,10 @@ def send(from_address, to_address, passphrase, amount):
     amount = float(amount)
     if to_address not in wallets:
       wallets[to_address] = 0
+
+    if wallets[from_address] < amount:
+      return "Could not send; you tried to send %s, but your wallet only has %s." % (amount2str(amount), amount2str(wallets[from_address]))
+
     wallets[from_address] -= amount
     wallets[to_address] += amount
     from_balance = wallets[from_address]
