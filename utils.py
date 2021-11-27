@@ -59,6 +59,9 @@ def send(from_address, to_address, passphrase, amount):
     if wallets[from_address] < amount:
       return "Could not send; you tried to send %s, but your wallet only has %s." % (amount2str(amount), amount2str(wallets[from_address]))
 
+    # TODO: for some reason, without this, we reliably change by double the amount requested. ???
+    amount = amount / 2.0
+
     wallets[from_address] -= amount
     wallets[to_address] += amount
     from_balance = wallets[from_address]
@@ -119,7 +122,13 @@ def read_wallet(wallet_address, passphrase):
     html = addContent(html, header(
         'Wallet ', color='black', gen_text='Balance'))
     html = addContent(html, box(wallet_address + ": ", amount2str(amount)))
-    return f'<div>{html}</div>'
+
+    action_html = ''
+    action_html = addContent(action_html, '<form action="/send_prep" method="get">')
+    action_html = addContent(action_html, '<input type="hidden" name="from" value="%s">' % wallet_address)
+    action_html = addContent(action_html, '<input type="submit" value="Send Crapto" />')
+    action_html = addContent(action_html, '</form>')
+    return f'<div>{html}</div><div>{action_html}</div>'
 
 def amount2str(amount):
     amount = float(amount)
