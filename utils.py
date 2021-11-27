@@ -126,7 +126,7 @@ def read_wallet(wallet_address, passphrase):
     action_html = ''
     action_html = addContent(action_html, '<form action="/send_prep" method="get">')
     action_html = addContent(action_html, '<input type="hidden" name="from" value="%s">' % wallet_address)
-    action_html = addContent(action_html, '<input type="submit" value="Send Crapto" />')
+    action_html = addContent(action_html, '<input type="submit" value="Send" />')
     action_html = addContent(action_html, '</form>')
     action_html = addContent(action_html, '<form action="/mine" method="get">')
     action_html = addContent(action_html, '<input type="hidden" name="wallet_address" value="%s">' % wallet_address)
@@ -221,5 +221,8 @@ def render_email_template(wallet_address, amount, sender_name='&lt;Someone&gt;')
 
 <h4>Is this real?</h4>
 <h5>Is anything "real?" Is Bitcoin "real?" Does cash printed on pieces of paper have any inherent value? Anything in demand has value. Crapto is as "real" as Bitcoin, or any other cryptocurrency... and we believe demand will grow. At the very least, we can all agree Crapto is a memorable name.</h5>
+
+<h4>Is this a joke?</h4>
+<h5>Yes. But it is also a cryptocurrency. Another joke cryptocurrency is <a href="https://en.wikipedia.org/wiki/Dogecoin">Dogecoin</a>.</h5>
 """)
     return html
