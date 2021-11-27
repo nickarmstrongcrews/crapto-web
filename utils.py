@@ -182,7 +182,7 @@ def render_email_template(wallet_address, amount, sender_name='&lt;Someone&gt;')
     passphrase = wallet_address
     wallet_url = '%s/?wallet_address=%s' % (ROOT_URL, wallet_address)
     html = ''
-    html = addContent(html, '<h5>%s has sent you a gift of 100 billion Crapto. This has been deposited into a new Crapto wallet as follows...</h5>' % sender_name)
+    html = addContent(html, '<h5>%s has sent you a gift of %s. This has been deposited into a new Crapto wallet as follows...</h5>' % (sender_name, amount2str(amount)))
     html = addContent(html, '<h5>Wallet address: %s</h5>' % wallet_address)
     html = addContent(html, '<h5>Passphrase: %s</h5>' % passphrase)
     html = addContent(html, '<h5>You can access your Crapto wallet at: <a href="%s">%s</a></h5>' % (wallet_url, wallet_url))
