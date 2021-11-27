@@ -214,7 +214,7 @@ def render_email_template(wallet_address, amount, sender_name='&lt;Someone&gt;')
 <h5>Most likely you will want to save it until its value follows the trend of cryptocurrencies like Bitcoin (which started at $0.0008 and today sells for around $60k). You can also send and receive Crapto, for example in exchange for goods and services, to any individual or entity which accepts Crapto as a form of payment.</h5>
 
 <h4>Can I mine for more Crapto?</h4>
-<h5>Yes. However, it cannot be done through the web interface; instead, you must build from source and install the client (for Linux and Windows) at: <a href=https://github.com/nickarmstrongcrews/crapto>https://github.com/nickarmstrongcrews/crapto</a> (note: this is not recommended for the uninitiated).</h5>
+<h5>Yes. However, it is somewhat rudimentary through the web interface; instead, you probably want to build from source and install the client (for Linux and Windows) at: <a href=https://github.com/nickarmstrongcrews/crapto>https://github.com/nickarmstrongcrews/crapto</a> (note: this is not recommended for the uninitiated).</h5>
 
 <h4>Where can I learn more about cryprocurrency?</h4>
 <h5><a href="https://en.wikipedia.org/wiki/Cryptocurrency">Wikipedia article</a></h5>
