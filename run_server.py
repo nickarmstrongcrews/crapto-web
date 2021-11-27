@@ -48,6 +48,9 @@ def admin():
   if not wallet_address or not amount or not passphrase:
     error_string = "usage: /add?wallet_address=[addr]&amount=[billion_crapto]"
     return render_template('error.html', input=write_error(error_string))
+  if amount < 0:
+    error_string = "nice try, but amount has to be greater than zero."
+    return render_template('error.html', input=write_error(error_string))
   return render_template('add.html', input=add_wallet(wallet_address, passphrase, amount))
 
 @app.route('/mine', methods=['GET'])
@@ -88,6 +91,10 @@ def send_page():
     if not amount:
       error_string += "\n(you lacked amount)"
     return render_template('error.html', input=write_error(error_string))
+  if amount < 0:
+    error_string = "nice try, but amount has to be greater than zero."
+    return render_template('error.html', input=write_error(error_string))
+
   send_output = send(from_address, to_address, passphrase, amount)
   return render_template('sent.html', send_output=send(from_address, to_address, passphrase, amount), email_template_output=render_email_template(to_address, amount))
 
