@@ -1,4 +1,4 @@
-from utils import read_wallet, add_wallet, write_error, send, render_email_template
+from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template
 from flask import Flask, render_template, request
 from wtforms import Form, TextField, PasswordField, validators, SubmitField, DecimalField, IntegerField
 
@@ -45,10 +45,17 @@ def admin():
   amount = request.args.get('amount')
   passphrase = wallet_address
   if not wallet_address or not amount or not passphrase:
-    error_string = "usage: /add?wallet_address=<addr>&amount=<billion_crapto>"
+    error_string = "usage: /add?wallet_address=[addr]&amount=[billion_crapto]"
     return render_template('error.html', input=write_error(error_string))
   return render_template('add.html', input=add_wallet(wallet_address, passphrase, amount))
 
+
+# admin interface to add to a wallet (existing or not)
+@app.route('/send_prep', methods=['GET', 'POST'])
+def send_prep_page():
+  from_address = request.args.get('from')
+  passphrase = from_address
+  return render_template('send.html', input=render_send_prep(from_address, passphrase))
 
 # admin interface to add to a wallet (existing or not)
 @app.route('/send', methods=['GET', 'POST'])
@@ -57,8 +64,15 @@ def send_page():
   to_address = request.args.get('to')
   amount = request.args.get('amount')
   passphrase = from_address
+
   if not from_address or not to_address or not amount or not passphrase:
-    error_string = "usage: /send?from=<wallet_addr>&to=<wallet_addr>&amount=<billion_crapto>"
+    error_string = "usage: /send?from=[wallet_addr]&to=[wallet_addr]&amount=[billion_crapto]"
+    if not from_address:
+      error_string += "\n(you lacked from_address)"
+    if not to_address:
+      error_string += "\n(you lacked to_address)"
+    if not amount:
+      error_string += "\n(you lacked amount)"
     return render_template('error.html', input=write_error(error_string))
   send_output = send(from_address, to_address, passphrase, amount)
   return render_template('sent.html', send_output=send(from_address, to_address, passphrase, amount), email_template_output=render_email_template(to_address, amount))

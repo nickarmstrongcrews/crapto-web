@@ -15,8 +15,32 @@ def read_wallets_file():
             wallets[row[0]] = float(row[1])
     return wallets
 
+def lookup_balance(wallet_address):
+  wallets = read_wallets_file()
+  return float(wallets[wallet_address]) if wallet_address in wallets else 0.0
+
 def write_error(error_string):
   return error_string
+
+def render_send_prep(from_address, passphrase):
+    if not authenticate(from_address, passphrase):
+      return "Bad passphrase for wallet address %s" % from_address
+
+    balance = lookup_balance(from_address)
+
+    # Formatting in html
+    html = ''
+    html = addContent(html, header(
+        'Wallet ', color='black', gen_text='Balance'))
+    html = addContent(html, box(from_address + ": ", amount2str(balance)))
+    html = addContent(html, '<form action="/send" method="get">')
+    html = addContent(html, '<input type="hidden" name="from" value="%s">' % from_address)
+    html = addContent(html, """
+<label>To wallet address: </label><input type="text" name="to"><br>
+<label>Amount (in billions): </label><input type="number" name="amount"><br>
+<input type="submit">
+</form>""")
+    return f'<div>{html}</div>'
 
 def send(from_address, to_address, passphrase, amount):
     if not authenticate(from_address, passphrase):
