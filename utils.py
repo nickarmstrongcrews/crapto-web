@@ -194,7 +194,7 @@ def render_email_template(wallet_address, amount, sender_name='&lt;Someone&gt;')
 <h3>FAQ</h3>
 
 <h4>What is Crapto?</h4>
-<h5>Crapto, short for "Craptocurrency", is a digital currency (or "cryptocurrency") similar to Bitcoin.</h5>
+<h5>Crapto, short for "Craptocurrency," is a digital currency (or "cryptocurrency") similar to Bitcoin.</h5>
 
 <h4>What can I do with my Crapto?</h4>
 <h5>Most likely you will want to save it until its value follows the trend of cryptocurrencies like Bitcoin (which started at $0.0008 and today sells for around $60k). You can also send and receive Crapto (not yet available through the web interface), for example in exchange for goods and services, to any individual or entity which accepts Crapto as a form of payment.</h5>
@@ -206,6 +206,6 @@ def render_email_template(wallet_address, amount, sender_name='&lt;Someone&gt;')
 <h5><a href="https://en.wikipedia.org/wiki/Cryptocurrency">Wikipedia article</a></h5>
 
 <h4>Is this real?</h4>
-<h5>Is anything "real"? Is Bitcoin "real"? Does cash printed on pieces of paper have any inherent value? Anything in demand has value. Crapto is as "real" as Bitcoin, or any other cryptocurrency... and we believe demand will grow. At the very least, we can all agree Crapto is a memorable name.</h5>
+<h5>Is anything "real?" Is Bitcoin "real?" Does cash printed on pieces of paper have any inherent value? Anything in demand has value. Crapto is as "real" as Bitcoin, or any other cryptocurrency... and we believe demand will grow. At the very least, we can all agree Crapto is a memorable name.</h5>
 """)
     return html
