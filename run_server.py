@@ -1,4 +1,4 @@
-from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase
+from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep
 from flask import Flask, render_template, request
 from wtforms import Form, TextField, PasswordField, validators, SubmitField, DecimalField, IntegerField
 import time
@@ -105,6 +105,32 @@ def send_page():
     return render_template('error.html', input=write_error(error_string))
 
   return render_template('sent.html', send_output=send(from_address, to_address, phash, amount), email_template_output=render_email_template(to_address, amount))
+
+# admin interface to add to a wallet (existing or not)
+@app.route('/change_pass_prep', methods=['GET', 'POST'])
+def change_pass_prep_page():
+  wallet_address = request.args.get('wallet_address')
+  phash = request.args.get('phash')
+  if not phash:
+    phash = hash_passphrase(wallet_address)
+  return render_template('change_pass_prep.html', input=change_pass_prep(wallet_address, phash))
+
+# admin interface to add to a wallet (existing or not)
+@app.route('/change_pass', methods=['GET', 'POST'])
+def change_pass_page():
+  wallet_address = request.args.get('wallet_address')
+  old_passphrase = request.args.get('old_passphrase')
+  new_passphrase = request.args.get('new_passphrase')
+  phash = request.args.get('phash')
+
+  if not phash == hash_passphrase(old_passphrase):
+    error_string = "old passphrase incorrect"
+    return render_template('error.html', input=write_error(error_string))
+
+  if not wallet_address or not old_passphrase or not new_passphrase or not phash:
+    error_string = "usage: /change_pass?wallet_address=[wallet_addr]&old_passphrase=[old_passphrase]&new_passphrase=[new_passphrase]&phash=[passphrase_hash]"
+
+  return render_template('change_pass.html', input=change_pass(wallet_address, phash, new_passphrase))
 
 if __name__ == "__main__":
     print(("* Loading Flask starting server..."

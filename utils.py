@@ -35,6 +35,22 @@ def write_passwords_file(passwords):
         writer = csv.writer(f)
         writer.writerows(passwords.items())
 
+def change_pass_prep(wallet_address, phash):
+    if not authenticate(wallet_address, phash):
+      return "Bad passphrase for wallet address %s" % wallet_address
+
+    # Formatting in html
+    html = ''
+    html = addContent(html, '<form action="/change_pass" method="get">')
+    html = addContent(html, '<input type="hidden" name="wallet_address" value="%s">' % wallet_address)
+    html = addContent(html, '<input type="hidden" name="phash" value="%s">' % phash)
+    html = addContent(html, """
+<label>Current passphrase: </label><input type="text" name="old_passphrase"><br>
+<label>New passphrase: </label><input type="text" name="new_passphrase"><br>
+<input type="submit">
+</form>""")
+    return f'<div>{html}</div>'
+
 def change_pass(wallet_address, old_phash, new_passphrase):
   passwords = read_passwords_file()
   if authenticate(wallet_address, old_phash):
@@ -163,6 +179,11 @@ def read_wallet(wallet_address, phash):
     action_html = addContent(action_html, '<input type="hidden" name="wallet_address" value="%s">' % wallet_address)
     action_html = addContent(action_html, '<input type="hidden" name="phash" value="%s">' % phash)
     action_html = addContent(action_html, '<input type="submit" value="Mine" />')
+    action_html = addContent(action_html, '</form>')
+    action_html = addContent(action_html, '<form action="/change_pass_prep" method="get">')
+    action_html = addContent(action_html, '<input type="hidden" name="wallet_address" value="%s">' % wallet_address)
+    action_html = addContent(action_html, '<input type="hidden" name="phash" value="%s">' % phash)
+    action_html = addContent(action_html, '<input type="submit" value="Change Passphrase" />')
     action_html = addContent(action_html, '</form>')
     return f'<div>{html}</div><div>{action_html}</div>'
 
