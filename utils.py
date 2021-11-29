@@ -41,11 +41,11 @@ def change_pass_prep(wallet_address, phash):
 
     # Formatting in html
     html = ''
-    html = addContent(html, '<form action="/change_pass" method="get">')
+    html = addContent(html, '<form action="/change_pass" method="post">')
     html = addContent(html, '<input type="hidden" name="wallet_address" value="%s">' % wallet_address)
     html = addContent(html, '<input type="hidden" name="phash" value="%s">' % phash)
     html = addContent(html, """
-<label>Current passphrase: </label><input type="text" name="old_passphrase"><br>
+<label>Current passphrase: </label><input type="password" name="old_passphrase"><br>
 <label>New passphrase: </label><input type="text" name="new_passphrase"><br>
 <input type="submit">
 </form>""")
@@ -81,12 +81,12 @@ def render_send_prep(from_address, phash):
     html = addContent(html, header(
         'Wallet ', color='black', gen_text='Balance'))
     html = addContent(html, box(from_address + ": ", amount2str(balance)))
-    html = addContent(html, '<form action="/send" method="get">')
+    html = addContent(html, '<form action="/send" method="post">')
     html = addContent(html, '<input type="hidden" name="from" value="%s">' % from_address)
     html = addContent(html, '<input type="hidden" name="phash" value="%s">' % phash)
     html = addContent(html, """
 <label>To wallet address: </label><input type="text" name="to"><br>
-<label>Amount (in billions): </label><input type="number" name="amount"><br>
+<label>Amount (in billions): </label><input type="number" step="any" name="amount"><br>
 <input type="submit">
 </form>""")
     return f'<div>{html}</div>'
@@ -170,17 +170,17 @@ def read_wallet(wallet_address, phash):
     html = addContent(html, box(wallet_address + ": ", amount2str(amount)))
 
     action_html = ''
-    action_html = addContent(action_html, '<form action="/send_prep" method="get">')
+    action_html = addContent(action_html, '<form action="/send_prep" method="post">')
     action_html = addContent(action_html, '<input type="hidden" name="from" value="%s">' % wallet_address)
     action_html = addContent(action_html, '<input type="hidden" name="phash" value="%s">' % phash)
     action_html = addContent(action_html, '<input type="submit" value="Send" />')
     action_html = addContent(action_html, '</form>')
-    action_html = addContent(action_html, '<form action="/mine" method="get">')
+    action_html = addContent(action_html, '<form action="/mine" method="post">')
     action_html = addContent(action_html, '<input type="hidden" name="wallet_address" value="%s">' % wallet_address)
     action_html = addContent(action_html, '<input type="hidden" name="phash" value="%s">' % phash)
     action_html = addContent(action_html, '<input type="submit" value="Mine" />')
     action_html = addContent(action_html, '</form>')
-    action_html = addContent(action_html, '<form action="/change_pass_prep" method="get">')
+    action_html = addContent(action_html, '<form action="/change_pass_prep" method="post">')
     action_html = addContent(action_html, '<input type="hidden" name="wallet_address" value="%s">' % wallet_address)
     action_html = addContent(action_html, '<input type="hidden" name="phash" value="%s">' % phash)
     action_html = addContent(action_html, '<input type="submit" value="Change Passphrase" />')

@@ -56,10 +56,10 @@ def admin():
     return render_template('error.html', input=write_error(error_string))
   return render_template('add.html', input=add_wallet(wallet_address, phash, amount))
 
-@app.route('/mine', methods=['GET'])
+@app.route('/mine', methods=['POST'])
 def mine_page():
-  wallet_address = request.args.get('wallet_address')
-  phash = request.args.get('phash')
+  wallet_address = request.form.get('wallet_address')
+  phash = request.form.get('phash')
   if not phash:
     phash = hash_passphrase(wallet_address)
   if not wallet_address or not phash:
@@ -73,21 +73,21 @@ def mine_page():
   return render_template('add.html', input=rendered_output)
 
 # admin interface to add to a wallet (existing or not)
-@app.route('/send_prep', methods=['GET', 'POST'])
+@app.route('/send_prep', methods=['POST'])
 def send_prep_page():
-  from_address = request.args.get('from')
-  phash = request.args.get('phash')
+  from_address = request.form.get('from')
+  phash = request.form.get('phash')
   if not phash:
     phash = hash_passphrase(from_address)
   return render_template('send.html', input=render_send_prep(from_address, phash))
 
 # admin interface to add to a wallet (existing or not)
-@app.route('/send', methods=['GET', 'POST'])
+@app.route('/send', methods=['POST'])
 def send_page():
-  from_address = request.args.get('from')
-  to_address = request.args.get('to')
-  amount = request.args.get('amount')
-  phash = request.args.get('phash')
+  from_address = request.form.get('from')
+  to_address = request.form.get('to')
+  amount = request.form.get('amount')
+  phash = request.form.get('phash')
   if not phash:
     phash = hash_passphrase(from_address)
 
@@ -107,21 +107,21 @@ def send_page():
   return render_template('sent.html', send_output=send(from_address, to_address, phash, amount), email_template_output=render_email_template(to_address, amount))
 
 # admin interface to add to a wallet (existing or not)
-@app.route('/change_pass_prep', methods=['GET', 'POST'])
+@app.route('/change_pass_prep', methods=['POST'])
 def change_pass_prep_page():
-  wallet_address = request.args.get('wallet_address')
-  phash = request.args.get('phash')
+  wallet_address = request.form.get('wallet_address')
+  phash = request.form.get('phash')
   if not phash:
     phash = hash_passphrase(wallet_address)
   return render_template('change_pass_prep.html', input=change_pass_prep(wallet_address, phash))
 
 # admin interface to add to a wallet (existing or not)
-@app.route('/change_pass', methods=['GET', 'POST'])
+@app.route('/change_pass', methods=['POST'])
 def change_pass_page():
-  wallet_address = request.args.get('wallet_address')
-  old_passphrase = request.args.get('old_passphrase')
-  new_passphrase = request.args.get('new_passphrase')
-  phash = request.args.get('phash')
+  wallet_address = request.form.get('wallet_address')
+  old_passphrase = request.form.get('old_passphrase')
+  new_passphrase = request.form.get('new_passphrase')
+  phash = request.form.get('phash')
 
   if not phash == hash_passphrase(old_passphrase):
     error_string = "old passphrase incorrect"
