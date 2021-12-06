@@ -1,4 +1,4 @@
-from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep
+from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help
 from flask import Flask, render_template, request
 from wtforms import Form, TextField, PasswordField, validators, SubmitField, DecimalField, IntegerField
 import time
@@ -39,6 +39,10 @@ def home():
 @app.route('/about')
 def about():
   return render_template('about.html')
+
+@app.route('/help')
+def help():
+  return render_template('help.html', input=render_help())
 
 # admin interface to add to a wallet (existing or not)
 @app.route('/add', methods=['GET'])
@@ -88,6 +92,8 @@ def send_page():
   to_address = request.form.get('to')
   amount = request.form.get('amount')
   phash = request.form.get('phash')
+  sender_name = request.form.get('sender_name')
+  new_checkbox = request.form.get('new_checkbox')
   if not phash:
     phash = hash_passphrase(from_address)
 
@@ -103,8 +109,11 @@ def send_page():
   if float(amount) < 0:
     error_string = "nice try, but amount has to be greater than zero."
     return render_template('error.html', input=write_error(error_string))
-
-  return render_template('sent.html', send_output=send(from_address, to_address, phash, amount), email_template_output=render_email_template(to_address, amount))
+  send_output=send(from_address, to_address, phash, amount, new_checkbox)
+  email_template_output=''
+  if not 'Error' in send_output:
+    email_template_output=render_email_template(to_address, amount, sender_name)
+  return render_template('sent.html', send_output=send_output, email_template_output=email_template_output)
 
 # admin interface to add to a wallet (existing or not)
 @app.route('/change_pass_prep', methods=['POST'])

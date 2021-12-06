@@ -37,7 +37,7 @@ def write_passwords_file(passwords):
 
 def change_pass_prep(wallet_address, phash):
     if not authenticate(wallet_address, phash):
-      return "Bad passphrase for wallet address %s" % wallet_address
+      return "Error: Bad passphrase for wallet address %s" % wallet_address
 
     # Formatting in html
     html = ''
@@ -57,7 +57,13 @@ def change_pass(wallet_address, old_phash, new_passphrase):
     passwords[wallet_address] = hash_passphrase(new_passphrase)
     write_passwords_file(passwords)
     return "Successfully changed passphrase."
-  return "Bad passphrase for wallet address %s" % wallet_address
+  return "Error: Bad passphrase for wallet address %s" % wallet_address
+
+def pseudorandom_wallet_address():
+  chars = [chr(id) for id in list(range(48,58)) + list(range(65, 91)) + list(range(97, 123))]
+  for c in 'l1I0O':
+    chars.remove(c)
+  return ''.join(random.choices(chars, k=6))
 
 def hash_passphrase(passphrase):
   hash_object = hashlib.sha1(passphrase.encode('utf-8'))
@@ -72,7 +78,7 @@ def write_error(error_string):
 
 def render_send_prep(from_address, phash):
     if not authenticate(from_address, phash):
-      return "Bad passphrase for wallet address %s" % from_address
+      return "Error: Bad passphrase for wallet address %s" % from_address
 
     balance = lookup_balance(from_address)
 
@@ -81,23 +87,36 @@ def render_send_prep(from_address, phash):
     html = addContent(html, header(
         'Wallet ', color='black', gen_text='Balance'))
     html = addContent(html, box(from_address + ": ", amount2str(balance)))
+    html = addContent(html, '<table>')
     html = addContent(html, '<form action="/send" method="post">')
     html = addContent(html, '<input type="hidden" name="from" value="%s">' % from_address)
     html = addContent(html, '<input type="hidden" name="phash" value="%s">' % phash)
+    html = addContent(html, '<input type="hidden" id="random_address" name="random_address" value="%s">' % pseudorandom_wallet_address())
     html = addContent(html, """
-<label>To wallet address: </label><input type="text" name="to"><br>
-<label>Amount (in billions): </label><input type="number" step="any" name="amount"><br>
-<input type="submit">
-</form>""")
+<tr><label>Amount (in billions): </label><input type="number" step="any" name="amount"><br></tr>
+<tr><label>To wallet address: </label><input type="text" name="to" id="to"><br></tr>
+<tr><label for="new_checkbox">Create New Wallet for Recipient</label> <input type="checkbox" id="new_checkbox" name="new_checkbox" onclick="document.getElementById('new_unique_div').style.display='block'"><br></tr>
+<tr>
+<div id="new_unique_div" style="display:none">
+  <label for="new_unique_checkbox" id="new_unique_label">Generate New Unique Wallet Address</label> <input type="checkbox" id="new_unique_checkbox" onclick="document.getElementById('to').value=document.getElementById('random_address').value">
+</div>
+</tr>
+<tr><label for="name">Your name (so recipient knows who it is from; optional): </label><input type="text" name="sender_name" value=""></tr>
+<tr><div><input type="submit"></div></tr>
+</form>
+</table>""")
     return f'<div>{html}</div>'
 
-def send(from_address, to_address, phash, amount):
+def send(from_address, to_address, phash, amount, new_checkbox):
     if not authenticate(from_address, phash):
-      return "Bad passphrase for wallet address %s" % from_address
+      return "Error: Bad passphrase for wallet address %s" % from_address
 
     # Note: since the file is read within this method, which is called for every request,
     #       updates to the CSV file will not require a server restart.
     wallets = read_wallets_file()
+
+    if new_checkbox and to_address in wallets:
+      return "Error: You requested to create a new wallet for recipient but wallet address %s already exists" % to_address
 
     from_address = from_address.lower()
     to_address = to_address.lower()
@@ -125,7 +144,7 @@ def send(from_address, to_address, phash, amount):
 
 def add_wallet(wallet_address, phash, amount):
     if not authenticate(wallet_address, phash):
-      return "Bad passphrase for wallet address %s" % wallet_address
+      return "Error: Bad passphrase for wallet address %s" % wallet_address
 
     # Note: since the file is read within this method, which is called for every request,
     #       updates to the CSV file will not require a server restart.
@@ -154,7 +173,7 @@ def authenticate(wallet_address, phash):
 
 def read_wallet(wallet_address, phash):
     if not authenticate(wallet_address, phash):
-      return "Bad passphrase for wallet address %s" % wallet_address
+      return "Error: Bad passphrase for wallet address %s" % wallet_address
 
     # Note: since the file is read within this method, which is called for every request,
     #       updates to the CSV file will not require a server restart.
@@ -245,37 +264,66 @@ def remove_spaces(s):
 
     return s
 
-def render_email_template(wallet_address, amount, sender_name='&lt;Someone&gt;'):
+def render_help():
+  return """
+For fastest help, contact one of the creators (if you have their info):<br>
+<table>
+<tr>Nick Armstrong-Crews</tr><br>
+<tr>Bill Yang</tr><br>
+<tr>Kai Ruan</tr><br>
+<tr>Vince Steffens</tr><br>
+<tr>Dayle Armstrong</tr><br>
+</table>
+<br>
+Otherwise, email: <a href="mailto:crapto.currency.help@gmail.com">crapto.currency.help@gmail.com</a>
+"""
+
+def render_email_template(wallet_address, amount, sender_name=''):
+  inner_html = render_email_template_internal(wallet_address, amount, sender_name)
+  return """
+<iframe id="email_iframe" name="email_iframe" src="about:blank" style="border:none;" scrolling="no"></iframe>
+<hr/>
+<input type="button" onclick="window.frames['email_iframe'].focus();window.frames['email_iframe'].print()" value="Print"/>
+<script type="text/javascript">
+  var doc = document.getElementById('email_iframe').contentWindow.document;
+  doc.open();
+  doc.write(`<html><head><title></title></head><body>%s</body></html>`);
+  doc.close();
+  var iframe = document.getElementById("email_iframe");
+  iframe.onload = function() {
+    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+  }
+</script>
+""" % inner_html
+
+def render_email_template_internal(wallet_address, amount, sender_name=''):
+    if not sender_name:
+      sender_name = '&lt;Someone&gt;'
     passphrase = wallet_address
     wallet_url = '%s/?wallet_address=%s' % (ROOT_URL, wallet_address)
     html = ''
-    html = addContent(html, '<h5>%s has sent you a gift of %s. This has been deposited into a new Crapto wallet as follows...</h5>' % (sender_name, amount2str(amount)))
+    html = addContent(html, '<h5>%s has sent you a gift of %s Currency. This has been deposited into a new wallet as follows...</h5>' % (sender_name, amount2str(amount)))
     html = addContent(html, '<h5>Wallet address: %s</h5>' % wallet_address)
-    html = addContent(html, '<h5>Passphrase: %s</h5>' % passphrase)
-    html = addContent(html, '<h5>You can access your Crapto wallet at: <a href="%s">%s</a></h5>' % (wallet_url, wallet_url))
+    html = addContent(html, '<h5>Initial passphrase: %s</h5>' % passphrase)
+    html = addContent(html, '<h5>You can access your Crapto wallet via web browser: <a href="%s">craptocurrency.net</a></h5>' % wallet_url)
     html = addContent(html, """
   <center>
-	<img src="static/images/crapto256.png" alt="Crapto icon"/>
+	<img src="static/images/crapto128.png" alt="Crapto icon"/>
   </center>
 
-<h3>FAQ</h3>
-
-<h4>What is Crapto?</h4>
-<h5>Crapto, short for "Craptocurrency," is a digital currency (or "cryptocurrency") similar to Bitcoin.</h5>
+<h4>What is Crapto Currency?</h4>
+<h5>Crapto Currency, or simply "Crapto," is a digital cryptocurrency similar to Bitcoin.</h5>
 
 <h4>What can I do with my Crapto?</h4>
-<h5>Most likely you will want to save it until its value follows the trend of cryptocurrencies like Bitcoin (which started at US$0.0008 and today sells for around US$60k). You can also send and receive Crapto, for example in exchange for goods and services, to any individual or entity which accepts Crapto as a form of payment.</h5>
-
-<h4>Can I mine for more Crapto?</h4>
-<h5>Yes. However, it is somewhat rudimentary through the web interface; instead, you probably want to build from source and install the client (for Linux and Windows) at: <a href=https://github.com/nickarmstrongcrews/crapto>https://github.com/nickarmstrongcrews/crapto</a> (note: this is not recommended for the uninitiated).</h5>
-
-<h4>Where can I learn more about cryprocurrency?</h4>
-<h5><a href="https://en.wikipedia.org/wiki/Cryptocurrency">Wikipedia article</a></h5>
+<h5>Most people send some to a friend or two to make them smile. You may choose to hodl it while its value trends like Bitcoin (starting at US$0.0008 and today selling for around US$60k). You may exchange it for goods, services, or other currency, with any individual or entity accepting Crapto as a form of payment.</h5>
 
 <h4>Is this real?</h4>
 <h5>Is anything "real?" Is Bitcoin "real?" Does cash printed on pieces of paper have any inherent value? Anything in demand has value. Crapto is as "real" as Bitcoin, or any other cryptocurrency... and we believe demand will grow. At the very least, we can all agree Crapto is a memorable name.</h5>
 
 <h4>Is this a joke?</h4>
 <h5>Yes. But it is also a cryptocurrency. Another joke cryptocurrency is <a href="https://en.wikipedia.org/wiki/Dogecoin">Dogecoin</a>, which reached market cap of US$85 billion.</h5>
+
+<h4>Where can I learn more?</h4>
+<h5><a href="http://craptocurrency.com/about">http://craptocurrency.com/about</a></h5>
 """)
     return html
