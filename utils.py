@@ -4,10 +4,12 @@ import json
 import re
 import csv
 import hashlib
+import datetime
 
 ROOT_URL = 'http://craptocurrency.net'
 WALLETS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/wallets.csv'
 PASSWORDS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/passwords.csv'
+LOG_FILENAME = '/home/ubuntu/crapto-web/data/log.txt'
 
 def read_wallets_file():
     wallets = {}
@@ -50,6 +52,15 @@ def change_pass_prep(wallet_address, phash):
 <input type="submit">
 </form>""")
     return f'<div>{html}</div>'
+
+def log(action, wallet_address, ip):
+  if not action:
+    action = "none"
+  if not wallet_address:
+    wallet_address = "none"
+  t = datetime.datetime.now().isoformat(timespec='auto')
+  with open(LOG_FILENAME, 'a') as f:
+    f.write('%s:%s:%s:%s\n' % (action, wallet_address, ip, t))
 
 def change_pass(wallet_address, old_phash, new_passphrase):
   passwords = read_passwords_file()
@@ -118,8 +129,8 @@ def send(from_address, to_address, phash, amount, new_checkbox):
     if new_checkbox and to_address in wallets:
       return "Error: You requested to create a new wallet for recipient but wallet address %s already exists" % to_address
 
-    from_address = from_address.lower()
-    to_address = to_address.lower()
+    #from_address = from_address.lower()
+    #to_address = to_address.lower()
     amount = float(amount)
     if to_address not in wallets:
       wallets[to_address] = 0
@@ -150,7 +161,7 @@ def add_wallet(wallet_address, phash, amount):
     #       updates to the CSV file will not require a server restart.
     wallets = read_wallets_file()
 
-    wallet_address = wallet_address.lower()
+    #wallet_address = wallet_address.lower()
     amount = float(amount)
     if wallet_address not in wallets:
       wallets[wallet_address] = 0
@@ -167,19 +178,25 @@ def add_wallet(wallet_address, phash, amount):
     return f'<div>{html}</div>'
 
 def authenticate(wallet_address, phash):
+  wallets = read_wallets_file()
+  if wallet_address not in wallets:
+    return False
   passwords = read_passwords_file()
   true_pass_hash = passwords[wallet_address] if wallet_address in passwords else hash_passphrase(wallet_address)
   return phash == true_pass_hash
 
 def read_wallet(wallet_address, phash):
-    if not authenticate(wallet_address, phash):
-      return "Error: Bad passphrase for wallet address %s" % wallet_address
-
     # Note: since the file is read within this method, which is called for every request,
     #       updates to the CSV file will not require a server restart.
     wallets = read_wallets_file()
+    if wallet_address not in wallets:
+      return "Error: Wallet address %s does not exist" % wallet_address
 
-    wallet_address = wallet_address.lower()
+    if not authenticate(wallet_address, phash):
+      return "Error: Bad passphrase for wallet address %s" % wallet_address
+
+
+    #wallet_address = wallet_address.lower()
     amount = wallets[wallet_address] if wallet_address in wallets else 0.0
 
     # Formatting in html
@@ -309,6 +326,7 @@ def render_email_template_internal(wallet_address, amount, sender_name=''):
     html = addContent(html, """
   <center>
 	<img src="static/images/crapto128.png" alt="Crapto icon"/>
+	<img src="static/images/qrcode.png" height=128 width=128 alt="Crapto icon"/>
   </center>
 
 <h4>What is Crapto Currency?</h4>
@@ -324,6 +342,6 @@ def render_email_template_internal(wallet_address, amount, sender_name=''):
 <h5>Yes. But it is also a cryptocurrency. Another joke cryptocurrency is <a href="https://en.wikipedia.org/wiki/Dogecoin">Dogecoin</a>, which reached market cap of US$85 billion.</h5>
 
 <h4>Where can I learn more?</h4>
-<h5><a href="http://craptocurrency.com/about">http://craptocurrency.com/about</a></h5>
+<h5><a href="http://craptocurrency.net/about">craptocurrency.net/about</a></h5>
 """)
     return html
