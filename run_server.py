@@ -151,6 +151,10 @@ def change_pass_page():
   log('chpass', wallet_address, request.remote_addr)
   return render_template('change_pass.html', input=change_pass(wallet_address, phash, new_passphrase))
 
+@app.route('/n4r', methods=['GET'])
+def n4r_home():
+  return render_template('n4r_home.html')
+
 if __name__ == "__main__":
     print(("* Loading Flask starting server..."
            "please wait until server has fully started"))
