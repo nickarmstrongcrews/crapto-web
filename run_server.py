@@ -155,6 +155,14 @@ def change_pass_page():
 def n4r_home():
   return render_template('n4r_home.html')
 
+@app.route('/n4r_refugee', methods=['GET'])
+def n4r_refugee():
+  return render_template('n4r_refugee.html')
+
+@app.route('/n4r_create', methods=['GET'])
+def n4r_create():
+  return render_template('n4r_create.html')
+
 if __name__ == "__main__":
     print(("* Loading Flask starting server..."
            "please wait until server has fully started"))
