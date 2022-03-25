@@ -24,8 +24,7 @@ def n4r_donate():
 <form action="/n4r_donated" method="post">
 <label>Crapto wallet address: </label><input type="text" name="wallet_address"><br>
 <label>passphrase: </label><input type="password" name="passphrase"><br>
-
-<form action="/action_page.php">
+  <hr>
   <p>Select the type of NFT you would like to generate.</p><hr>
   <img src="static/images/food_nft.jpg">
   <label for="food">Food</label>
@@ -39,6 +38,35 @@ def n4r_donate():
   <input type="submit" value="Deduct 1M pieces of Crapto from my wallet">
 </form>"""
   return f'<div>{html}</div>'
+
+def n4r_claim():
+  random_nft_id = pseudorandom_wallet_address()
+  html = '<input type="hidden" id="random_nft_id" name="random_nft_id" value="%s">\n' % random_nft_id
+  html += """
+<form action="/n4r_retrieved" method="post">
+  <p>
+    Are you a refugee? If not, you may not claim an NFT; these NFTs are for refugees.
+    <label for="refugee">Yes</label>
+    <input type="checkbox" id="refugee" name="refugee" value="Yes">
+  </p><hr>
+  <p>
+    Have you previously claimed an NFT?<br>
+    <input type="radio" id="yesclaimed" name="claimed" value="Yes" onclick="document.getElementById('nft_id_div').style.display='block'">
+    <label for="yesclaimed">Yes</label>
+    <input type="radio" id="noclaimed" name="claimed" value="No" onclick="document.getElementById('nft_id_div').style.display='block';document.getElementById('nft_id').value=document.getElementById('random_nft_id').value">
+    <label for="noclaimed">No</label>
+  </p><hr>
+
+<div id="nft_id_div" style="display:none">
+  <label for="nft_id" id="nft_id_label">NFT ID:</label><input type="text" name="nft_id" id="nft_id"><br>
+</div>
+  <input type="submit" value="Retrieve NFT">
+</form>"""
+  return f'<div>{html}</div>'
+
+def random_nft():
+  img_filename = random.choices(("food_nft.jpg", "medicine_nft.jpg", "shelter_nft.jpg"))[0]
+  return f"<div><img src='static/images/{img_filename}'></div>"
 
 def read_wallets_file():
     wallets = {}
@@ -138,7 +166,8 @@ def render_send_prep(from_address, phash):
 <tr><label for="new_checkbox">Create New Wallet for Recipient</label> <input type="checkbox" id="new_checkbox" name="new_checkbox" onclick="document.getElementById('new_unique_div').style.display='block'"><br></tr>
 <tr>
 <div id="new_unique_div" style="display:none">
-  <label for="new_unique_checkbox" id="new_unique_label">Generate New Unique Wallet Address</label> <input type="checkbox" id="new_unique_checkbox" onclick="document.getElementById('to').value=document.getElementById('random_address').value">
+  <label for="new_unique_checkbox" id="new_unique_label">Generate New Unique Wallet Address</label>
+  <input type="checkbox" id="new_unique_checkbox" onclick="document.getElementById('to').value=document.getElementById('random_address').value">
 </div>
 </tr>
 <tr><label for="name">Your name (so recipient knows who it is from; optional): </label><input type="text" name="sender_name" value=""></tr>

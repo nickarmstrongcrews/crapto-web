@@ -1,4 +1,4 @@
-from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help, log, n4r_donate
+from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help, log, n4r_donate, n4r_claim, random_nft
 from flask import Flask, render_template, request
 from wtforms import Form, TextField, PasswordField, validators, SubmitField, DecimalField, IntegerField
 import time
@@ -157,7 +157,8 @@ def n4r_home():
 
 @app.route('/n4r_refugee', methods=['GET'])
 def n4r_refugee():
-  return render_template('n4r_refugee.html')
+  return render_template('n4r_generic.html', title="Claim NFT", input=n4r_claim())
+  #return render_template('n4r_refugee.html')
 
 @app.route('/n4r_create', methods=['GET'])
 def n4r_create():
@@ -169,9 +170,10 @@ def n4r_donated():
   return render_template('n4r_generic.html', title="Donated NFT", input="<div>Sorry, could not verify your wallet! (this feature is a work-in-progress)</div>")
   #return render_template('n4r_generic.html', input="<div>Thanks for the donation!</div>")
 
-@app.route('/n4r_template', methods=['GET'])
-def n4r_template():
-  return render_template('n4r_generic.html', input=n4r_donate(), title="Donate")
+@app.route('/n4r_retrieved', methods=['POST'])
+def n4r_retrieved():
+  #return render_template('n4r_generic.html', title="Your NFT", input="<div>Sorry, could not locate your NFT! (this feature is a work-in-progress)</div>")
+  return render_template('n4r_generic.html', title="Gaze Upon Your NFT", input=random_nft())
 
 if __name__ == "__main__":
     print(("* Loading Flask starting server..."
