@@ -15,7 +15,7 @@
 	<a href="/n4r">Home</a>
       </li>
       <li>
-	<a href="/n4r_create">Create/Donate</a>
+	<a href="/n4r_create">Donate</a>
       </li>
       <li>
 	<a href="/n4r_refugee">Refugee Portal</a>
@@ -28,30 +28,21 @@
 
 <body>
 
-    <h1>
-      <center>Donate</center>
+      <h1>
+      <center>
+        {% block head %}
+        {{title|safe}}
+        {% endblock %}
+      </center>
+      </h1>
       <center><img src="static/images/n4r256.png" alt="N4R icon"/></center>
-    </h1>
 
-<h5>
+    <div class="container">
+        {% block content %}
+        {{input|safe}}
+        {% endblock %}
+    </div>
 
-You must first create an NFT (importing NFTs from external sources is a work-in-progress).<br>
-
-Creating an NFT will cost 1 million pieces of Crapto, or roughly the amount you can mine in one second.<br>
-
-Go to <a href="/">Crapto home</a> if you need to generate some Crapto.<br>
-
-Enter your crapto wallet: (wallet_address)<br>
-Password: (password)<br>
-
-Select the type of NFT you would like to generate: (food/medicine/shelter)<br>
-</h5>
-
-<center>
-<img src="static/images/food_nft.jpg">
-<img src="static/images/medicine_nft.jpg">
-<img src="static/images/shelter_nft.jpg">
-</center>
 
 </body>
 

@@ -11,6 +11,35 @@ WALLETS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/wallets.csv'
 PASSWORDS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/passwords.csv'
 LOG_FILENAME = '/home/ubuntu/crapto-web/data/log.txt'
 
+def n4r_donate():
+  html = """
+<h5>
+<p>You must first create an NFT (importing NFTs from external sources is a work-in-progress).</p>
+
+<p>Creating an NFT will cost 1 million pieces of Crapto, or roughly the amount you can mine in one second.</p>
+
+<p>Go to <a href="/">Crapto home</a> if you need to generate some Crapto.</p>
+</h5>
+
+<form action="/n4r_donated" method="post">
+<label>Crapto wallet address: </label><input type="text" name="wallet_address"><br>
+<label>passphrase: </label><input type="password" name="passphrase"><br>
+
+<form action="/action_page.php">
+  <p>Select the type of NFT you would like to generate.</p><hr>
+  <img src="static/images/food_nft.jpg">
+  <label for="food">Food</label>
+  <input type="radio" id="food" name="nft_type" value="Food"><br><hr>
+  <img src="static/images/medicine_nft.jpg">
+  <label for="medicine">Medicine</label>
+  <input type="radio" id="medicine" name="nft_type" value="Medicine"><br><hr>
+  <img src="static/images/shelter_nft.jpg">
+  <label for="shelter">Shelter</label>
+  <input type="radio" id="shelter" name="nft_type" value="Shelter"><br><hr>
+  <input type="submit" value="Deduct 1M pieces of Crapto from my wallet">
+</form>"""
+  return f'<div>{html}</div>'
+
 def read_wallets_file():
     wallets = {}
     with open(WALLETS_CSV_FILENAME, newline='') as csvfile:
