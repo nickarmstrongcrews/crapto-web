@@ -175,6 +175,10 @@ def n4r_retrieved():
   #return render_template('n4r_generic.html', title="Your NFT", input="<div>Sorry, could not locate your NFT! (this feature is a work-in-progress)</div>")
   return render_template('n4r_generic.html', title="Gaze Upon Your NFT", input=random_nft())
 
+@app.route('/n4r_faq', methods=['GET'])
+def n4r_faq():
+  return render_template('n4r_faq.html')
+
 if __name__ == "__main__":
     print(("* Loading Flask starting server..."
            "please wait until server has fully started"))
