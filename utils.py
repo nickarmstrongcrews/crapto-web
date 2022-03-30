@@ -176,6 +176,15 @@ def render_send_prep(from_address, phash):
 </table>""")
     return f'<div>{html}</div>'
 
+def create_empty(wallet_address):
+    wallets = read_wallets_file()
+    if wallet_address in wallets:
+      return False
+    else:
+      wallets[wallet_address] = 0
+      write_wallets_file(wallets)
+      return True
+
 def send(from_address, to_address, phash, amount, new_checkbox):
     if not authenticate(from_address, phash):
       return "Error: Bad passphrase for wallet address %s" % from_address

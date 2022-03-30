@@ -1,4 +1,4 @@
-from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help, log, n4r_donate, n4r_claim, random_nft
+from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help, log, create_empty, n4r_donate, n4r_claim, random_nft
 from flask import Flask, render_template, request
 from wtforms import Form, TextField, PasswordField, validators, SubmitField, DecimalField, IntegerField
 import time
@@ -82,25 +82,42 @@ def mine_page():
   log('mine', wallet_address, request.remote_addr)
   return render_template('add.html', input=rendered_output)
 
-# admin interface to add to a wallet (existing or not)
+def get_param(param_name):
+  param = request.form.get(param_name)
+  if not param:
+    param = request.args.get(param_name)
+  return param
+
+# usage: http://craptocurrency.net/create_empty?wallet_address=<new_wallet_name>
+@app.route('/create_empty', methods=['GET','POST'])
+def create_empty_page():
+  wallet_address = get_param('wallet_address')
+  if create_empty(wallet_address):
+    return send_prep_page_inner(wallet_address)
+  else:
+    return render_template('error.html', input="<div>Error: cannot create new wallet, since wallet_address %s already exists</div>" % wallet_address)
+
+# balance page, shown after login, can prepare to send form here
 @app.route('/send_prep', methods=['POST'])
 def send_prep_page():
-  from_address = request.form.get('from')
+  return send_prep_page_inner(request.form.get('from'))
+
+def send_prep_page_inner(from_address):
   phash = request.form.get('phash')
   if not phash:
     phash = hash_passphrase(from_address)
   log('send_prep', from_address, request.remote_addr)
   return render_template('send.html', input=render_send_prep(from_address, phash))
 
-# admin interface to add to a wallet (existing or not)
+# sent page; shown after the send_prep page
 @app.route('/send', methods=['POST'])
 def send_page():
-  from_address = request.form.get('from')
-  to_address = request.form.get('to')
-  amount = request.form.get('amount')
-  phash = request.form.get('phash')
-  sender_name = request.form.get('sender_name')
-  new_checkbox = request.form.get('new_checkbox')
+  from_address = get_param('from')
+  to_address = get_param('to')
+  amount = get_param('amount')
+  phash = get_param('phash')
+  sender_name = get_param('sender_name')
+  new_checkbox = get_param('new_checkbox')
   if not phash:
     phash = hash_passphrase(from_address)
 
@@ -123,7 +140,6 @@ def send_page():
   log('send', to_address, request.remote_addr)
   return render_template('sent.html', send_output=send_output, email_template_output=email_template_output)
 
-# admin interface to add to a wallet (existing or not)
 @app.route('/change_pass_prep', methods=['POST'])
 def change_pass_prep_page():
   wallet_address = request.form.get('wallet_address')
@@ -133,7 +149,7 @@ def change_pass_prep_page():
   log('chpass_prep', wallet_address, request.remote_addr)
   return render_template('change_pass_prep.html', input=change_pass_prep(wallet_address, phash))
 
-# admin interface to add to a wallet (existing or not)
+# page shown after change_pass_prep
 @app.route('/change_pass', methods=['POST'])
 def change_pass_page():
   wallet_address = request.form.get('wallet_address')
@@ -150,6 +166,12 @@ def change_pass_page():
 
   log('chpass', wallet_address, request.remote_addr)
   return render_template('change_pass.html', input=change_pass(wallet_address, phash, new_passphrase))
+
+#@app.route("/create_empty", methods=['GET', 'POST'])
+#def create_empty():
+#  return send_prep_page()
+
+##############################################################
 
 @app.route('/n4r', methods=['GET'])
 def n4r_home():
