@@ -8,6 +8,7 @@ import datetime
 
 ROOT_URL = 'http://craptocurrency.net'
 WALLETS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/wallets.csv'
+NFTS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/nfts.csv'
 PASSWORDS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/passwords.csv'
 LOG_FILENAME = '/home/ubuntu/crapto-web/data/log.txt'
 
@@ -39,6 +40,10 @@ def n4r_donate():
   <img src="static/images/shelter_nft.jpg">
   <label for="shelter">Shelter</label>
   <input type="radio" id="shelter" name="nft_type" value="Shelter"><br><hr>
+"""
+  random_nft_id = pseudorandom_wallet_address()
+  html += '<input type="hidden" id="nft_id" name="nft_id" value="%s">\n' % random_nft_id
+  html += """
   <input type="submit" value="Deduct 1M pieces of Crapto from my wallet">
 </form>"""
   return f'<div>{html}</div>'
@@ -72,13 +77,27 @@ def random_nft():
   img_filename = random.choices(("food_nft.jpg", "medicine_nft.jpg", "shelter_nft.jpg"))[0]
   return f"<div><img src='static/images/{img_filename}'></div>"
 
+# format is: nft_id,<type> where <type> is food, medicine, or shelter
+def read_nfts_file():
+  nfts = {}
+  with open(NFTS_CSV_FILENAME, newline='') as csvfile:
+    reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+    for row in reader:
+      nfts[row[0]] = float(row[1])
+  return nfts
+
+def write_nfts_file(nfts):
+    with open(NFTS_CSV_FILENAME, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerows(nfts.items())
+
 def read_wallets_file():
-    wallets = {}
-    with open(WALLETS_CSV_FILENAME, newline='') as csvfile:
-        reader = csv.reader(csvfile, delimiter=',', quotechar='|')
-        for row in reader:
-            wallets[row[0]] = float(row[1])
-    return wallets
+  wallets = {}
+  with open(WALLETS_CSV_FILENAME, newline='') as csvfile:
+    reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+    for row in reader:
+      wallets[row[0]] = float(row[1])
+  return wallets
 
 def write_wallets_file(wallets):
     with open(WALLETS_CSV_FILENAME, 'w', newline='') as f:

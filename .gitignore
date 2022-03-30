@@ -112,6 +112,8 @@ venv.bak/
 # wallet files
 wallets.csv
 wallets.csv.bak
+nfts.csv
+nfts.csv.bak
 
 # password file
 passwords.csv

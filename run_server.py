@@ -191,13 +191,17 @@ def n4r_create():
 
 @app.route('/n4r_donated', methods=['POST'])
 def n4r_donated():
+  nft_id = request.form.get('nft_id')
+  nft_type = request.form.get('nft_type')
   return render_template('n4r_generic.html', title="Donated NFT", input="<div>Sorry, could not verify your wallet! (this feature is a work-in-progress)</div>")
   #return render_template('n4r_generic.html', input="<div>Thanks for the donation!</div>")
 
-@app.route('/n4r_retrieved', methods=['POST'])
+@app.route('/n4r_retrieved', methods=['GET','POST'])
 def n4r_retrieved():
+  nft_id = get_param('nft_id')
   #return render_template('n4r_generic.html', title="Your NFT", input="<div>Sorry, could not locate your NFT! (this feature is a work-in-progress)</div>")
   return render_template('n4r_generic.html', title="Gaze Upon Your NFT", input=random_nft())
+  #return render_template('n4r_generic.html', title="Gaze Upon Your NFT", input="<img src='static/images/rendered_nft.jpg'>")
 
 @app.route('/n4r_faq', methods=['GET'])
 def n4r_faq():
