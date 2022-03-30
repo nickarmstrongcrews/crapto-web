@@ -92,8 +92,10 @@ def get_param(param_name):
 @app.route('/create_empty', methods=['GET','POST'])
 def create_empty_page():
   wallet_address = get_param('wallet_address')
+  log('create_empty', wallet_address, request.remote_addr)
   if create_empty(wallet_address):
-    return send_prep_page_inner(wallet_address)
+    #return send_prep_page_inner(wallet_address)
+    return render_template('wallet.html', input=read_wallet(wallet_address, hash_passphrase(wallet_address)))
   else:
     return render_template('error.html', input="<div>Error: cannot create new wallet, since wallet_address %s already exists</div>" % wallet_address)
 

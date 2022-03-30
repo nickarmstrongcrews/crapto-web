@@ -16,13 +16,17 @@ def n4r_donate():
 <h5>
 <p>You must first create an NFT (importing NFTs from external sources is a work-in-progress).</p>
 
-<p>Creating an NFT will cost 1 million pieces of Crapto, or roughly the amount you can mine in one second.</p>
+<p>Creating an NFT will cost 1 million pieces of Crapto, or roughly the amount you can mine in one second. Learn more at <a href="/">Crapto home</a>.</p>
 
-<p>Go to <a href="/">Crapto home</a> if you need to generate some Crapto.</p>
+<p>No Crapto? Create a new wallet (free) and get started mining. Your initial passphrase will be the same as your wallet address.</p>
 </h5>
+<form action="/create_empty" method="post">
+<label>Enter new Crapto wallet address: </label><input type="text" name="wallet_address"><br>
+  <input type="submit" value="Create new wallet">
+</form>
 
 <form action="/n4r_donated" method="post">
-<label>Crapto wallet address: </label><input type="text" name="wallet_address"><br>
+<label>Existing Crapto wallet address: </label><input type="text" name="wallet_address"><br>
 <label>passphrase: </label><input type="password" name="passphrase"><br>
   <hr>
   <p>Select the type of NFT you would like to generate.</p><hr>
