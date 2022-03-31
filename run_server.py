@@ -1,4 +1,4 @@
-from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help, log, create_empty, n4r_donate, n4r_claim, random_nft
+from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help, log, create_empty, n4r_donate, n4r_claim, random_nft, retrieve_nft
 from flask import Flask, render_template, request
 from wtforms import Form, TextField, PasswordField, validators, SubmitField, DecimalField, IntegerField
 import time
@@ -199,8 +199,11 @@ def n4r_donated():
 @app.route('/n4r_retrieved', methods=['GET','POST'])
 def n4r_retrieved():
   nft_id = get_param('nft_id')
+  claimed_str = get_param('claimed')
+  claimed = claimed_str == 'Yes'  # convert to boolean
   #return render_template('n4r_generic.html', title="Your NFT", input="<div>Sorry, could not locate your NFT! (this feature is a work-in-progress)</div>")
-  return render_template('n4r_generic.html', title="Gaze Upon Your NFT", input=random_nft())
+  #return render_template('n4r_generic.html', title="Gaze Upon Your NFT", input=random_nft())
+  return render_template('n4r_generic.html', title="Gaze Upon Your NFT", input=retrieve_nft(nft_id, claimed))
   #return render_template('n4r_generic.html', title="Gaze Upon Your NFT", input="<img src='static/images/rendered_nft.jpg'>")
 
 @app.route('/n4r_faq', methods=['GET'])

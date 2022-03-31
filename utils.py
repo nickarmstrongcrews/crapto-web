@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import random
 import json
@@ -5,6 +6,7 @@ import re
 import csv
 import hashlib
 import datetime
+import cv2
 
 ROOT_URL = 'http://craptocurrency.net'
 WALLETS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/wallets.csv'
@@ -73,8 +75,26 @@ def n4r_claim():
 </form>"""
   return f'<div>{html}</div>'
 
+def retrieve_nft(nft_id, claimed):
+  nfts = read_nfts_file()
+  id_exists = nft_id in nfts
+  #return "%s: %s, %s" %(nft_id, "claimed" if claimed else "unclaimed", "exists" if id_exists else "not_exists")
+  if claimed and not id_exists:
+    return "<div>Error: could not find nft_id %s</div>" % nft_id
+  elif not claimed and not id_exists:
+    nfts[nft_id] = random_nft_type()
+    write_nfts_file(nfts)
+  nft_type = nfts[nft_id]
+  read_and_transform_and_write_nft(nft_id, nft_type)
+  return "<img src='static/images/rendered_nft.jpg?%s'>" % nft_id
+
+def random_nft_type():
+  return random.choices(("food", "medicine", "shelter"))[0]
+
 def random_nft():
-  img_filename = random.choices(("food_nft.jpg", "medicine_nft.jpg", "shelter_nft.jpg"))[0]
+  nft_type = random_nft_type
+  img_filename = "%s_nft.jpg" % nft_type
+  #img_filename = random.choices(("food_nft.jpg", "medicine_nft.jpg", "shelter_nft.jpg"))[0]
   return f"<div><img src='static/images/{img_filename}'></div>"
 
 # format is: nft_id,<type> where <type> is food, medicine, or shelter
@@ -83,13 +103,13 @@ def read_nfts_file():
   with open(NFTS_CSV_FILENAME, newline='') as csvfile:
     reader = csv.reader(csvfile, delimiter=',', quotechar='|')
     for row in reader:
-      nfts[row[0]] = float(row[1])
+      nfts[row[0]] = row[1]
   return nfts
 
 def write_nfts_file(nfts):
-    with open(NFTS_CSV_FILENAME, 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerows(nfts.items())
+  with open(NFTS_CSV_FILENAME, 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerows(nfts.items())
 
 def read_wallets_file():
   wallets = {}
@@ -159,6 +179,41 @@ def pseudorandom_wallet_address():
 def hash_passphrase(passphrase):
   hash_object = hashlib.sha1(passphrase.encode('utf-8'))
   return hash_object.hexdigest()
+
+# the nft_id defines the random number triplet used to transform the HSV colors of the image.
+def random_uint8_triplet(nft_id):
+  max_value = 255
+  n_bits = math.ceil(math.log2(max_value+1))
+  hash_object = hashlib.sha1(nft_id.encode('utf-8'))
+  digest_int = int(hash_object.hexdigest(), 16)
+  nft_int_lower = digest_int % max_value
+  nft_int_mid = (digest_int >> n_bits) % max_value
+  nft_int_upper = (digest_int >> (n_bits*2)) % max_value
+  return (nft_int_lower, nft_int_mid, nft_int_upper)
+
+def random_float_zero_to_one_triplet(nft_id):
+  hash_object = hashlib.sha1(nft_id.encode('utf-8'))
+  digest_int = int(hash_object.hexdigest(), 16)
+  random.seed(digest_int)
+  return (random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1))
+
+def render_transformed_nft(nft_id, image):
+  #(a, b, c) = random_uint8_triplet(nft_id)
+  (a, b, c) = random_float_zero_to_one_triplet(nft_id)
+  hsvImage = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+  # multiplication is enough because image is already dtype uint8 and so it truncates
+  hsvImage[:,:,0] = hsvImage[:,:,0] * a
+  hsvImage[:,:,1] = hsvImage[:,:,1] * b
+  hsvImage[:,:,2] = hsvImage[:,:,2] * c
+  transformed_image = cv2.cvtColor(hsvImage, cv2.COLOR_HSV2BGR)
+  return transformed_image
+
+def read_and_transform_and_write_nft(nft_id, nft_type):
+  nft_filename = 'static/images/%s_nft.jpg' % nft_type
+  img = cv2.imread(nft_filename)
+  transformed_nft = render_transformed_nft(nft_id, img)
+  cv2.imwrite('rendered_nft.jpg', transformed_nft)
+  cv2.imwrite('static/images/rendered_nft.jpg', transformed_nft)
 
 def lookup_balance(wallet_address):
   wallets = read_wallets_file()
