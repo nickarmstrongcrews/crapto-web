@@ -169,25 +169,24 @@ def change_pass_page():
   log('chpass', wallet_address, request.remote_addr)
   return render_template('change_pass.html', input=change_pass(wallet_address, phash, new_passphrase))
 
-#@app.route("/create_empty", methods=['GET', 'POST'])
-#def create_empty():
-#  return send_prep_page()
-
 ##############################################################
+# N4R
+#####
 
 @app.route('/n4r', methods=['GET'])
 def n4r_home():
+  log('n4r_home', None, request.remote_addr)
   return render_template('n4r_home.html')
 
 @app.route('/n4r_refugee', methods=['GET'])
 def n4r_refugee():
+  log('n4r_refugee', None, request.remote_addr)
   return render_template('n4r_generic.html', title="Claim NFT", input=n4r_claim())
-  #return render_template('n4r_refugee.html')
 
 @app.route('/n4r_create', methods=['GET'])
 def n4r_create():
+  log('n4r_donate', None, request.remote_addr)
   return render_template('n4r_generic.html', input=n4r_donate(), title="Donate")
-  #return render_template('n4r_create.html')
 
 @app.route('/n4r_donated', methods=['POST'])
 def n4r_donated_page():
@@ -195,22 +194,20 @@ def n4r_donated_page():
   nft_type = request.form.get('nft_type')
   wallet_address = request.form.get('wallet_address')
   passphrase = request.form.get('passphrase')
+  log('n4r_donated', nft_id + '/' + wallet_address, request.remote_addr)
   return render_template('n4r_generic.html', title="Donated NFT", input=n4r_donated(nft_id, nft_type, wallet_address, passphrase))
-  #return render_template('n4r_generic.html', title="Donated NFT", input="<div>Sorry, could not verify your wallet! (this feature is a work-in-progress)</div>")
-  #return render_template('n4r_generic.html', input="<div>Thanks for the donation!</div>")
 
 @app.route('/n4r_retrieved', methods=['GET','POST'])
 def n4r_retrieved():
   nft_id = get_param('nft_id')
   claimed_str = get_param('claimed')
   claimed = claimed_str == 'Yes'  # convert to boolean
-  #return render_template('n4r_generic.html', title="Your NFT", input="<div>Sorry, could not locate your NFT! (this feature is a work-in-progress)</div>")
-  #return render_template('n4r_generic.html', title="Gaze Upon Your NFT", input=random_nft())
+  log('n4r_retrieved', nft_id, request.remote_addr)
   return render_template('n4r_generic.html', title="Gaze Upon Your NFT", input=retrieve_nft(nft_id, claimed))
-  #return render_template('n4r_generic.html', title="Gaze Upon Your NFT", input="<img src='static/images/rendered_nft.jpg'>")
 
 @app.route('/n4r_faq', methods=['GET'])
 def n4r_faq():
+  log('n4r_faq', None, request.remote_addr)
   return render_template('n4r_faq.html')
 
 if __name__ == "__main__":
