@@ -1,4 +1,4 @@
-from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help, log, create_empty, n4r_donate, n4r_claim, random_nft, retrieve_nft
+from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help, log, create_empty, n4r_donate, n4r_claim, random_nft, retrieve_nft, n4r_donated
 from flask import Flask, render_template, request
 from wtforms import Form, TextField, PasswordField, validators, SubmitField, DecimalField, IntegerField
 import time
@@ -190,10 +190,13 @@ def n4r_create():
   #return render_template('n4r_create.html')
 
 @app.route('/n4r_donated', methods=['POST'])
-def n4r_donated():
+def n4r_donated_page():
   nft_id = request.form.get('nft_id')
   nft_type = request.form.get('nft_type')
-  return render_template('n4r_generic.html', title="Donated NFT", input="<div>Sorry, could not verify your wallet! (this feature is a work-in-progress)</div>")
+  wallet_address = request.form.get('wallet_address')
+  passphrase = request.form.get('passphrase')
+  return render_template('n4r_generic.html', title="Donated NFT", input=n4r_donated(nft_id, nft_type, wallet_address, passphrase))
+  #return render_template('n4r_generic.html', title="Donated NFT", input="<div>Sorry, could not verify your wallet! (this feature is a work-in-progress)</div>")
   #return render_template('n4r_generic.html', input="<div>Thanks for the donation!</div>")
 
 @app.route('/n4r_retrieved', methods=['GET','POST'])

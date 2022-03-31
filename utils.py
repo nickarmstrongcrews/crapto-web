@@ -14,6 +14,21 @@ NFTS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/nfts.csv'
 PASSWORDS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/passwords.csv'
 LOG_FILENAME = '/home/ubuntu/crapto-web/data/log.txt'
 
+def n4r_donated(nft_id, nft_type, wallet_address, passphrase):
+  phash = hash_passphrase(passphrase)
+  if not authenticate(wallet_address, phash):
+    return "<div>Error: Bad passphrase for wallet address %s</div>" % wallet_address
+
+  wallets = read_wallets_file()
+
+  NFT_DONATION_COST_MILLIONS = 1
+  if NFT_DONATION_COST_MILLIONS > wallets[wallet_address]:
+    return "<div>Error: Tried to deduct 1M pieces of Crapto, but wallet %s only has %.0f</div>" % (wallet_address, wallets[wallet_address]) 
+
+  wallets[wallet_address] -= NFT_DONATION_COST_MILLIONS
+  write_wallets_file(wallets)
+  return "<div>Donation successful; 1M pieces of Crapto have been deducted from wallet %s, leaving %.0f</div>" % (wallet_address, wallets[wallet_address])
+
 def n4r_donate():
   html = """
 <h5>
@@ -35,13 +50,13 @@ def n4r_donate():
   <p>Select the type of NFT you would like to generate.</p><hr>
   <img src="static/images/food_nft.jpg">
   <label for="food">Food</label>
-  <input type="radio" id="food" name="nft_type" value="Food"><br><hr>
+  <input type="radio" id="food" name="nft_type" value="food"><br><hr>
   <img src="static/images/medicine_nft.jpg">
   <label for="medicine">Medicine</label>
-  <input type="radio" id="medicine" name="nft_type" value="Medicine"><br><hr>
+  <input type="radio" id="medicine" name="nft_type" value="medicine"><br><hr>
   <img src="static/images/shelter_nft.jpg">
   <label for="shelter">Shelter</label>
-  <input type="radio" id="shelter" name="nft_type" value="Shelter"><br><hr>
+  <input type="radio" id="shelter" name="nft_type" value="shelter"><br><hr>
 """
   random_nft_id = pseudorandom_wallet_address()
   html += '<input type="hidden" id="nft_id" name="nft_id" value="%s">\n' % random_nft_id
