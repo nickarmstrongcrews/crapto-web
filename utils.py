@@ -73,8 +73,9 @@ def n4r_claim():
   <p>
     Are you a refugee? If not, you may not claim an NFT; these NFTs are for refugees.
     <label for="refugee">Yes</label>
-    <input type="checkbox" id="refugee" name="refugee" value="Yes">
+    <input type="checkbox" id="refugee" name="refugee" value="Yes" onclick="document.getElementById('claim_div').style.display='block'">
   </p><hr>
+<div id="claim_div" style="display:none">
   <p>
     Have you previously claimed an NFT?<br>
     <input type="radio" id="yesclaimed" name="claimed" value="Yes" onclick="document.getElementById('nft_id_div').style.display='block'">
@@ -82,11 +83,12 @@ def n4r_claim():
     <input type="radio" id="noclaimed" name="claimed" value="No" onclick="document.getElementById('nft_id_div').style.display='block';document.getElementById('nft_id').value=document.getElementById('random_nft_id').value">
     <label for="noclaimed">No</label>
   </p><hr>
+</div>
 
 <div id="nft_id_div" style="display:none">
   <label for="nft_id" id="nft_id_label">NFT ID:</label><input type="text" name="nft_id" id="nft_id"><br>
-</div>
   <input type="submit" value="Retrieve NFT">
+</div>
 </form>"""
   return f'<div>{html}</div>'
 
@@ -215,10 +217,12 @@ def random_float_zero_to_one_triplet(nft_id):
 def render_transformed_nft(nft_id, image):
   #(a, b, c) = random_uint8_triplet(nft_id)
   (a, b, c) = random_float_zero_to_one_triplet(nft_id)
+  c = 1  # don't darken image; it is ugly
   hsvImage = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
   # multiplication is enough because image is already dtype uint8 and so it truncates
   hsvImage[:,:,0] = hsvImage[:,:,0] * a
-  hsvImage[:,:,1] = hsvImage[:,:,1] * b
+  #hsvImage[:,:,1] = hsvImage[:,:,1] * b
+  hsvImage[:,:,1] = 255 * b
   hsvImage[:,:,2] = hsvImage[:,:,2] * c
   transformed_image = cv2.cvtColor(hsvImage, cv2.COLOR_HSV2BGR)
   return transformed_image
