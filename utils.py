@@ -22,32 +22,36 @@ def n4r_donated(nft_id, nft_type, wallet_address, passphrase):
   wallets = read_wallets_file()
 
   NFT_DONATION_COST_MILLIONS = 1
-  if NFT_DONATION_COST_MILLIONS > wallets[wallet_address]:
-    return "<div>Error: Tried to deduct 1M pieces of Crapto, but wallet %s only has %.0f</div>" % (wallet_address, wallets[wallet_address]) 
+  if NFT_DONATION_COST_MILLIONS > wallets[wallet_address] * 1000:
+    return "<div>Error: Tried to deduct 1M pieces of Crapto, but wallet %s only has %.0fM</div>" % (wallet_address, wallets[wallet_address]*1000) 
 
-  wallets[wallet_address] -= NFT_DONATION_COST_MILLIONS
+  wallets[wallet_address] -= NFT_DONATION_COST_MILLIONS / 1000.
   write_wallets_file(wallets)
-  return "<div>Donation successful; 1M pieces of Crapto have been deducted from wallet %s, leaving %.0f</div>" % (wallet_address, wallets[wallet_address])
+  html = "<div>Donation of %s NFT successful; 1M pieces of Crapto have been deducted from wallet %s, leaving %.0fM</div><hr>" % (nft_type, wallet_address, wallets[wallet_address]*1000)
+  nft_img_str = retrieve_nft(nft_id, False, nft_type)
+  html += "<div><h1>Gaze upon your newly-minted NFT</h1><br>%s<br><h5>This donated NFT is now available for refugees to claim via the <a href='/n4r_refugee'>Refugee Portal</a>.</div>" % nft_img_str
+  return html
 
 def n4r_donate():
   html = """
 <h5>
-<p>You must first create an NFT (importing NFTs from external sources is a work-in-progress).</p>
+<p>You must first <i>create</i> an NFT (</i>importing</i> NFTs from external sources is a work-in-progress).</p>
 
-<p>Creating an NFT will cost 1 million pieces of Crapto, or roughly the amount you can mine in one second. Learn more at <a href="/">Crapto home</a>.</p>
+<p>Creating an NFT will cost 1 million pieces of Crapto, or roughly the amount you can mine in one second. Learn more at <a href="/about">Crapto home</a>.</p>
 
+<hr>
 <p>No Crapto? Create a new wallet (free) and get started mining. Your initial passphrase will be the same as your wallet address.</p>
 </h5>
 <form action="/create_empty" method="post">
-<label>Enter new Crapto wallet address: </label><input type="text" name="wallet_address"><br>
+<label>Enter new Crapto wallet address:<br>(choose any alphanumeric string)</label><input type="text" name="wallet_address"><br>
   <input type="submit" value="Create new wallet">
 </form>
 
+<hr>
 <form action="/n4r_donated" method="post">
 <label>Existing Crapto wallet address: </label><input type="text" name="wallet_address"><br>
 <label>passphrase: </label><input type="password" name="passphrase"><br>
-  <hr>
-  <p>Select the type of NFT you would like to generate.</p><hr>
+  <p>Select below the type of NFT you would like to generate.</p><hr>
   <img src="static/images/food_nft.jpg">
   <label for="food">Food</label>
   <input type="radio" id="food" name="nft_type" value="food"><br><hr>
@@ -92,14 +96,16 @@ def n4r_claim():
 </form>"""
   return f'<div>{html}</div>'
 
-def retrieve_nft(nft_id, claimed):
+def retrieve_nft(nft_id, claimed, nft_type=None):
   nfts = read_nfts_file()
   id_exists = nft_id in nfts
   #return "%s: %s, %s" %(nft_id, "claimed" if claimed else "unclaimed", "exists" if id_exists else "not_exists")
   if claimed and not id_exists:
     return "<div>Error: could not find nft_id %s</div>" % nft_id
   elif not claimed and not id_exists:
-    nfts[nft_id] = random_nft_type()
+    if nft_type == None:
+      nft_type = random_nft_type()
+    nfts[nft_id] = nft_type
     write_nfts_file(nfts)
   nft_type = nfts[nft_id]
   read_and_transform_and_write_nft(nft_id, nft_type)
@@ -449,7 +455,7 @@ def render_help():
   return """
 For fastest help, contact one of the creators (if you have their info):<br>
 <table>
-<tr>Nick Armstrong-Crews</tr><br>
+<tr><a href="https://onlyfans.com/dr_strongarm">Nick Armstrong-Crews</a></tr><br>
 <tr>Bill Yang</tr><br>
 <tr>Kai Ruan</tr><br>
 <tr>Vince Steffens</tr><br>
