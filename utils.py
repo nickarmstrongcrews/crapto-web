@@ -13,6 +13,7 @@ WALLETS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/wallets.csv'
 NFTS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/nfts.csv'
 PASSWORDS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/passwords.csv'
 LOG_FILENAME = '/home/ubuntu/crapto-web/data/log.txt'
+RECAPTCHA_KEY_FILENAME = '/home/ubuntu/crapto-web/data/recaptcha_secret_key.txt'
 
 def n4r_donated(nft_id, nft_type, wallet_address, passphrase):
   phash = hash_passphrase(passphrase)
@@ -154,6 +155,14 @@ def read_passwords_file():
         for row in reader:
             passwords[row[0]] = row[1]
     return passwords
+
+def read_recaptcha_key():
+    key = None
+    with open(RECAPTCHA_KEY_FILENAME, newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        for row in reader:
+            key = row[0]
+    return key
 
 def write_passwords_file(passwords):
     with open(PASSWORDS_CSV_FILENAME, 'w', newline='') as f:

@@ -1,4 +1,4 @@
-from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help, log, create_empty, n4r_donate, n4r_claim, random_nft, retrieve_nft, n4r_donated
+from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help, log, create_empty, n4r_donate, n4r_claim, random_nft, retrieve_nft, n4r_donated, read_recaptcha_key
 from flask import Flask, render_template, request
 import requests
 from wtforms import Form, TextField, PasswordField, validators, SubmitField, DecimalField, IntegerField
@@ -18,9 +18,8 @@ class ReusableForm(Form):
 
 def verify_recaptcha(token, remote_addr):
   recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify'
-  recaptcha_secret_key = 'SECRET-KEY'
   payload = {
-     'secret': '6LeWbG4gAAAAALoyL_aN_90yVdQaIgTG_-1zV6Vn',
+     'secret': read_recaptcha_key(),
      'response': token,
      'remoteip': remote_addr,
   }
