@@ -1,5 +1,6 @@
 from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help, log, create_empty, n4r_donate, n4r_claim, random_nft, retrieve_nft, n4r_donated
 from flask import Flask, render_template, request
+import requests
 from wtforms import Form, TextField, PasswordField, validators, SubmitField, DecimalField, IntegerField
 import time
 
@@ -13,6 +14,19 @@ class ReusableForm(Form):
     passphrase = PasswordField("Enter passphrase:", validators=[
                      validators.InputRequired()])
     submit = SubmitField("Enter")
+
+
+def verify_recaptcha(token, remote_addr):
+  recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify'
+  recaptcha_secret_key = 'SECRET-KEY'
+  payload = {
+     'secret': '6LeWbG4gAAAAALoyL_aN_90yVdQaIgTG_-1zV6Vn',
+     'response': token,
+     'remoteip': remote_addr,
+  }
+  response = requests.post(recaptcha_url, data = payload)
+  result = response.json()
+  return result.get('success', False)
 
 
 # Home page
@@ -209,6 +223,23 @@ def n4r_retrieved():
 def n4r_faq():
   log('n4r_faq', None, request.remote_addr)
   return render_template('n4r_faq.html')
+
+@app.route('/robosha', methods=['GET'])
+def robosha():
+  log('robosha', None, request.remote_addr)
+  return render_template('robosha_faq.html')
+
+@app.route('/robosha_join', methods=['POST'])
+def robosha_join():
+  member_id = get_param('member_id')
+  token = get_param('g-recaptcha-response')
+  success = verify_recaptcha(token, request.remote_addr)
+  log('robosha_join', member_id, request.remote_addr)
+  if success:
+    html = "Sorry, no humans allowed!"
+  else:
+    html = "Welcome to RobOSHA, %s!" % member_id
+  return render_template('robosha_generic.html', title="Join RobOSHA", input=html)
 
 if __name__ == "__main__":
     print(("* Loading Flask starting server..."
