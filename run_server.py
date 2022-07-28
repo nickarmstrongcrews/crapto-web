@@ -1,4 +1,4 @@
-from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help, log, create_empty, n4r_donate, n4r_claim, random_nft, retrieve_nft, n4r_donated, read_recaptcha_key, robosha_add_member
+from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help, log, create_empty, n4r_donate, n4r_claim, random_nft, retrieve_nft, n4r_donated, read_recaptcha_key, robosha_add_member, render_robosha_help
 from flask import Flask, render_template, request
 import requests
 from wtforms import Form, TextField, PasswordField, validators, SubmitField, DecimalField, IntegerField
@@ -233,6 +233,11 @@ def robosha_faq():
   log('robosha_faq', None, request.remote_addr)
   return render_template('robosha_faq.html')
 
+@app.route('/robosha_help', methods=['GET'])
+def robosha_help():
+  log('robosha_help', None, request.remote_addr)
+  return render_template('robosha_generic.html', title="RobOSHA Help", input=render_robosha_help())
+
 @app.route('/robosha_membership', methods=['GET'])
 def robosha_membership():
   log('robosha_membership', None, request.remote_addr)
@@ -240,6 +245,7 @@ def robosha_membership():
 
 @app.route('/robosha_join', methods=['POST'])
 def robosha_join():
+  print("DEBUG: Got join request, args: %s" % request.args)
   member_id = get_param('member_id')
   token = get_param('g-recaptcha-response')
   success = verify_recaptcha(token, request.remote_addr)

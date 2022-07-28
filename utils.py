@@ -18,6 +18,8 @@ ROBOSHA_MEMBERSHIP_FILENAME = '/home/ubuntu/crapto-web/data/robosha.txt'
 
 def robosha_add_member(member_id):
   member_ids = read_robosha_membership_file()
+  if not member_id:
+    return "Sorry, your member_id is empty!"
   if '/n' in member_id or '/r' in member_id:
     return "Sorry, no newline characters allowed in member ID."
   if member_id in member_ids:
@@ -25,6 +27,18 @@ def robosha_add_member(member_id):
   else:
     write_robosha_membership_file(member_ids + [member_id])
     return "Welcome to RobOSHA, %s!" % member_id
+
+def render_robosha_help():
+  return """
+For fastest help, contact one of the creators (if you have their info):<br>
+<table>
+<tr>Dayle Armstrong</tr><br>
+<tr>Kai Ruan</tr><br>
+<tr>Vince Steffens</tr><br>
+</table>
+<br>
+Otherwise, email: <a href="mailto:robosha.help@gmail.com">robosha.help@gmail.com</a>
+"""
 
 def n4r_donated(nft_id, nft_type, wallet_address, passphrase):
   phash = hash_passphrase(passphrase)
