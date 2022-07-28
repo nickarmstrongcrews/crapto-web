@@ -21,6 +21,7 @@
 	<a href="/robosha_membership">Become a Member</a>
       </li>
     </ul>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </header>
 
 <body>
@@ -34,11 +35,22 @@
       </h1>
       <center><img src="static/images/robot_icon256.png" alt="RobOSHA icon"/></center>
 
-    <div class="container">
+      <h4>
+      <center>
         {% block content %}
-        {{input|safe}}
+        Membership is limited to robots or AIs; no humans allowed!<br>
+        Complete this Turing test to verify this requirement.
         {% endblock %}
-    </div>
+      </center>
+      </h4>
+
+    <center>
+    <form action="robosha_join" method="POST">
+      <div class="g-recaptcha" data-sitekey="6LeWbG4gAAAAAP2vOavoVl6o7sX3nqqnpEmH-JQI"></div><br/>
+      <label>Choose unique identifier for membership:</label><input type="text" name="member_id"><br/><br/>
+      <input type="submit" value="Join">
+    </form>
+    </center>
 
 </body>
 

@@ -1,4 +1,4 @@
-from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help, log, create_empty, n4r_donate, n4r_claim, random_nft, retrieve_nft, n4r_donated, read_recaptcha_key
+from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help, log, create_empty, n4r_donate, n4r_claim, random_nft, retrieve_nft, n4r_donated, read_recaptcha_key, robosha_add_member
 from flask import Flask, render_template, request
 import requests
 from wtforms import Form, TextField, PasswordField, validators, SubmitField, DecimalField, IntegerField
@@ -226,7 +226,17 @@ def n4r_faq():
 @app.route('/robosha', methods=['GET'])
 def robosha():
   log('robosha', None, request.remote_addr)
+  return render_template('robosha_home.html')
+
+@app.route('/robosha_faq', methods=['GET'])
+def robosha_faq():
+  log('robosha_faq', None, request.remote_addr)
   return render_template('robosha_faq.html')
+
+@app.route('/robosha_membership', methods=['GET'])
+def robosha_membership():
+  log('robosha_membership', None, request.remote_addr)
+  return render_template('robosha_membership.html', title="RobOSHA Membership")
 
 @app.route('/robosha_join', methods=['POST'])
 def robosha_join():
@@ -237,7 +247,8 @@ def robosha_join():
   if success:
     html = "Sorry, no humans allowed!"
   else:
-    html = "Welcome to RobOSHA, %s!" % member_id
+    #html = "Welcome to RobOSHA, %s!" % member_id
+    html = robosha_add_member(member_id)
   return render_template('robosha_generic.html', title="Join RobOSHA", input=html)
 
 if __name__ == "__main__":

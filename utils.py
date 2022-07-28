@@ -14,6 +14,17 @@ NFTS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/nfts.csv'
 PASSWORDS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/passwords.csv'
 LOG_FILENAME = '/home/ubuntu/crapto-web/data/log.txt'
 RECAPTCHA_KEY_FILENAME = '/home/ubuntu/crapto-web/data/recaptcha_secret_key.txt'
+ROBOSHA_MEMBERSHIP_FILENAME = '/home/ubuntu/crapto-web/data/robosha.txt'
+
+def robosha_add_member(member_id):
+  member_ids = read_robosha_membership_file()
+  if '/n' in member_id or '/r' in member_id:
+    return "Sorry, no newline characters allowed in member ID."
+  if member_id in member_ids:
+    return "Sorry, that unique member ID is already taken!"
+  else:
+    write_robosha_membership_file(member_ids + [member_id])
+    return "Welcome to RobOSHA, %s!" % member_id
 
 def n4r_donated(nft_id, nft_type, wallet_address, passphrase):
   phash = hash_passphrase(passphrase)
@@ -163,6 +174,14 @@ def read_recaptcha_key():
         for row in reader:
             key = row[0]
     return key
+
+def read_robosha_membership_file():
+  return [line.rstrip() for line in open(ROBOSHA_MEMBERSHIP_FILENAME, 'r')]
+
+def write_robosha_membership_file(members):
+    with open(ROBOSHA_MEMBERSHIP_FILENAME, 'w') as f:
+        for m in members:
+            f.write(m + '\n')
 
 def write_passwords_file(passwords):
     with open(PASSWORDS_CSV_FILENAME, 'w', newline='') as f:

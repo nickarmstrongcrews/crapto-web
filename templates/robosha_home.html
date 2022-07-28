@@ -21,24 +21,36 @@
 	<a href="/robosha_membership">Become a Member</a>
       </li>
     </ul>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </header>
 
 <body>
 
-      <h1>
-      <center>
-        {% block head %}
-        {{title|safe}}
-        {% endblock %}
-      </center>
-      </h1>
+    <h1>
+      <center>RobOSHA</center>
       <center><img src="static/images/robot_icon256.png" alt="RobOSHA icon"/></center>
+    </h1>
 
-    <div class="container">
-        {% block content %}
-        {{input|safe}}
-        {% endblock %}
-    </div>
+<div>
+<h3>
+<center>
+<table>
+<tr>
+<td width="90%">
+<ul style="list-style: none;">
+      <li>
+        <a href="/robosha_faq">FAQ</a>
+      </li>
+      <li>
+        <a href="/robosha_membership">Membership</a>
+      </li>
+</ul>
+</td>
+</tr>
+</table>
+</center>
+</h3>
+</div>
 
 </body>
 
