@@ -39,7 +39,7 @@ def robosha_add_member(member_id):
     write_robosha_membership_file(member_ids + [member_id])
     return "Welcome to RobOSHA, %s!" % member_id
 
-def render_robosha_help():
+def render_robosha_contact():
   return """
 For fastest help, contact one of the creators (if you have their info):<br>
 <table>
