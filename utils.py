@@ -16,6 +16,9 @@ LOG_FILENAME = '/home/ubuntu/crapto-web/data/log.txt'
 RECAPTCHA_KEY_FILENAME = '/home/ubuntu/crapto-web/data/recaptcha_secret_key.txt'
 ROBOSHA_MEMBERSHIP_FILENAME = '/home/ubuntu/crapto-web/data/robosha.txt'
 
+def num_robosha_members(member_id):
+  return len(read_robosha_membership_file())
+
 def robosha_add_member(member_id):
   member_ids = read_robosha_membership_file()
   if not member_id:
