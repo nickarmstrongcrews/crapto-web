@@ -15,6 +15,11 @@ PASSWORDS_CSV_FILENAME = '/home/ubuntu/crapto-web/data/passwords.csv'
 LOG_FILENAME = '/home/ubuntu/crapto-web/data/log.txt'
 RECAPTCHA_KEY_FILENAME = '/home/ubuntu/crapto-web/data/recaptcha_secret_key.txt'
 ROBOSHA_MEMBERSHIP_FILENAME = '/home/ubuntu/crapto-web/data/robosha.txt'
+ROBOSHA_JOINBOT_FILENAME = '/home/ubuntu/crapto-web/join_robosha_bot.py'
+
+def render_robosha_joinbot():
+  with open(ROBOSHA_JOINBOT_FILENAME) as f:
+    return f.read().replace('\n', '<br>\n')
 
 def num_robosha_members(member_id):
   return len(read_robosha_membership_file())
