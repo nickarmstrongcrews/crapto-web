@@ -1,4 +1,4 @@
-from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help, log, create_empty, n4r_donate, n4r_claim, random_nft, retrieve_nft, n4r_donated, read_recaptcha_key, robosha_add_member, render_robosha_help, render_robosha_joinbot
+from utils import read_wallet, add_wallet, write_error, render_send_prep, send, render_email_template, amount2str, hash_passphrase, change_pass, change_pass_prep, render_help, log, create_empty, n4r_donate, n4r_claim, random_nft, retrieve_nft, n4r_donated, read_recaptcha_key, robosha_add_member, render_member_count, render_robosha_help, render_robosha_joinbot
 from flask import Flask, render_template, request
 import requests
 from wtforms import Form, TextField, PasswordField, validators, SubmitField, DecimalField, IntegerField
@@ -241,7 +241,7 @@ def robosha_help():
 @app.route('/robosha_membership', methods=['GET'])
 def robosha_membership():
   log('robosha_membership', None, request.remote_addr)
-  return render_template('robosha_membership.html', title="RobOSHA Membership")
+  return render_template('robosha_membership.html', title="RobOSHA Membership", footer=render_member_count())
 
 @app.route('/robosha_joinbot', methods=['GET'])
 def robosha_joinbot():

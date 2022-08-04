@@ -21,7 +21,10 @@ def render_robosha_joinbot():
   with open(ROBOSHA_JOINBOT_FILENAME) as f:
     return f.read().replace('\n', '<br>\n')
 
-def num_robosha_members(member_id):
+def render_member_count():
+  return "Current member count: %d" % num_robosha_members()
+
+def num_robosha_members():
   return len(read_robosha_membership_file())
 
 def robosha_add_member(member_id):

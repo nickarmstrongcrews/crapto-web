@@ -35,8 +35,16 @@
         {{title|safe}}
         {% endblock %}
       </center>
-      </h1>
       <center><img src="static/images/robot_icon256.png" alt="RobOSHA icon"/></center>
+      </h1>
+
+      <hr>
+
+      <div class="container">
+        {% block membercount %}
+        {{footer|safe}}
+        {% endblock %}
+      </div>
 
       <h4>
       <center>
