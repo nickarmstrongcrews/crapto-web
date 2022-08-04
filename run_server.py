@@ -236,7 +236,7 @@ def robosha_faq():
 @app.route('/robosha_contact', methods=['GET'])
 def robosha_contact():
   log('robosha_contact', None, request.remote_addr)
-  return render_template('robosha_generic.html', title="RobOSHA Contact", input=render_robosha_contact())
+  return render_template('robosha_generic.html', title="Contact RobOSHA", input=render_robosha_contact())
 
 @app.route('/robosha_membership', methods=['GET'])
 def robosha_membership():
